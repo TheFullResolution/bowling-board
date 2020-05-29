@@ -1,5 +1,6 @@
 import React from "react";
 import { Box, Container, CssBaseline, Typography } from "@material-ui/core";
+import { StartGame } from "../StartGame/StartGame";
 
 export const App: React.FC = () => {
   return (
@@ -10,6 +11,9 @@ export const App: React.FC = () => {
           <Typography variant="h4" component="h1" gutterBottom align="center">
             Bowling Board
           </Typography>
+        </Box>
+        <Box my={10} textAlign="center">
+          <StartGame />
         </Box>
       </Container>
     </>
