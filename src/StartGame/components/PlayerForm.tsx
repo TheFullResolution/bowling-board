@@ -1,28 +1,30 @@
-import React, { useState } from "react";
-import randomatic from "randomatic";
+import React, { FormEventHandler } from "react";
 import { Box, Button, Fade, IconButton, TextField } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import ClearIcon from "@material-ui/icons/Clear";
 
-interface Props {}
+interface Props {
+  players: { id: string; value: string }[];
+  createRemovePlayer: (id: string) => () => void;
+  addPlayer: () => void;
+  handleSubmit: FormEventHandler<HTMLFormElement>;
+  createOnChange: (id: string) => React.ChangeEventHandler<HTMLInputElement>;
+  formId: string;
+}
 
-export const PlayerForm: React.FC<Props> = () => {
-  const [players, setPlayers] = useState<string[]>([randomatic("Aa", 10)]);
-
-  const addPlayer = () => {
-    const playerId = randomatic("Aa", 10);
-
-    setPlayers([...players, playerId]);
-  };
-
-  const createPopPlayer = (name: string) => () => {
-    setPlayers(players.filter(player => player !== name));
-  };
-
+export const PlayerForm: React.FC<Props> = ({
+  players,
+  createRemovePlayer,
+  createOnChange,
+  addPlayer,
+  handleSubmit,
+  formId
+}) => {
   return (
-    <>
-      {players.map((id, index) => {
-        const popPlayer = createPopPlayer(id);
+    <form onSubmit={handleSubmit} id={formId}>
+      {players.map(({ id, value }, index) => {
+        const removePlayer = createRemovePlayer(id);
+        const onChange = createOnChange(id);
         return (
           <Fade in={true} appear={true} key={id} timeout={550}>
             <Box display="flex">
@@ -32,11 +34,14 @@ export const PlayerForm: React.FC<Props> = () => {
                 id={id}
                 label={`Player ${index + 1} Name`}
                 type="text"
+                value={value}
+                onChange={onChange}
                 fullWidth
+                autoComplete={"off"}
                 variant="outlined"
               />
               {index > 0 && (
-                <IconButton onClick={popPlayer}>
+                <IconButton onClick={removePlayer}>
                   <ClearIcon />
                 </IconButton>
               )}
@@ -54,6 +59,6 @@ export const PlayerForm: React.FC<Props> = () => {
           Add More Players
         </Button>
       </Box>
-    </>
+    </form>
   );
 };
