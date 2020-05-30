@@ -8,7 +8,8 @@ import {
   Slide,
   useMediaQuery,
   useTheme,
-  Dialog as MaterialDialog
+  Dialog as MaterialDialog,
+  Typography,
 } from "@material-ui/core";
 import { TransitionProps } from "@material-ui/core/transitions";
 
@@ -16,6 +17,7 @@ interface Props {
   open: boolean;
   handleClose: () => void;
   formId: string;
+  showformValid: boolean;
 }
 
 const Transition = React.forwardRef(function Transition(
@@ -29,7 +31,8 @@ export const Dialog: React.FC<Props> = ({
   open,
   handleClose,
   children,
-  formId
+  formId,
+  showformValid,
 }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -52,6 +55,11 @@ export const Dialog: React.FC<Props> = ({
           Before you start the game, add all players to the list.
         </DialogContentText>
         {children}
+        {showformValid && (
+          <Typography color="error" paragraph>
+            You missed some names! Please check
+          </Typography>
+        )}
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose} color="secondary" variant="outlined">
@@ -62,6 +70,7 @@ export const Dialog: React.FC<Props> = ({
           form={formId}
           color="primary"
           variant="contained"
+          disabled={showformValid}
         >
           Start Game
         </Button>

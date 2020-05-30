@@ -10,6 +10,7 @@ interface Props {
   handleSubmit: FormEventHandler<HTMLFormElement>;
   createOnChange: (id: string) => React.ChangeEventHandler<HTMLInputElement>;
   formId: string;
+  showformValid: boolean;
 }
 
 export const PlayerForm: React.FC<Props> = ({
@@ -18,7 +19,8 @@ export const PlayerForm: React.FC<Props> = ({
   createOnChange,
   addPlayer,
   handleSubmit,
-  formId
+  formId,
+  showformValid,
 }) => {
   return (
     <form onSubmit={handleSubmit} id={formId}>
@@ -30,6 +32,7 @@ export const PlayerForm: React.FC<Props> = ({
             <Box display="flex">
               <TextField
                 autoFocus
+                error={showformValid && !value}
                 margin="dense"
                 id={id}
                 label={`Player ${index + 1} Name`}
