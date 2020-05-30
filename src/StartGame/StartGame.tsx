@@ -2,7 +2,7 @@ import React, { useReducer, useState } from "react";
 import { Box, Button, Container, Typography } from "@material-ui/core";
 import { PlayerForm } from "./components/PlayerForm";
 import { Dialog } from "./components/Dialog";
-import banner from "../App/banner.jpg";
+import banner from "./banner.jpg";
 import { makeStyles } from "@material-ui/core/styles";
 import {
   playersFormStateReducer,

@@ -12,7 +12,7 @@ interface State {
 }
 
 export const AppStateSubject = new BehaviorSubject<State>({
-  appPosition: AppPosition.starGame,
-  players: [],
+  appPosition: AppPosition.gameBoard,
+  players: [{id: "players1", value: "Stefand"}, {id: "players2", value: "Stefands"}],
   showInstructions: true,
 });

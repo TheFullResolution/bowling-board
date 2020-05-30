@@ -3,23 +3,16 @@ import { CssBaseline } from "@material-ui/core";
 import { StartGame } from "../StartGame/StartGame";
 import { AppPosition, AppStateSubject } from "./App.state";
 import { useSharedState } from "../stateUtils";
+import { BoardGame } from "../BoardGame/BoardGame";
 
 export const App: React.FC = () => {
-  const [{ appPosition, players }] = useSharedState(AppStateSubject);
+  const [{ appPosition }] = useSharedState(AppStateSubject);
 
   return (
     <>
       <CssBaseline></CssBaseline>
 
-      {appPosition === AppPosition.starGame ? (
-        <StartGame />
-      ) : (
-        <ul>
-          {players.map((pl) => (
-            <li key={pl.id}>{pl.value}</li>
-          ))}
-        </ul>
-      )}
+      {appPosition === AppPosition.starGame ? <StartGame /> : <BoardGame />}
     </>
   );
 };
