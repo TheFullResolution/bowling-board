@@ -1,17 +1,25 @@
 import React from "react";
-import { Box, Container, CssBaseline, Typography } from "@material-ui/core";
+import { CssBaseline } from "@material-ui/core";
+import { StartGame } from "../StartGame/StartGame";
+import { AppPosition, AppStateSubject } from "./App.state";
+import { useSharedState } from "../stateUtils";
 
 export const App: React.FC = () => {
+  const [{ appPosition, players }] = useSharedState(AppStateSubject);
+
   return (
     <>
       <CssBaseline></CssBaseline>
-      <Container maxWidth="lg">
-        <Box my={4}>
-          <Typography variant="h4" component="h1" gutterBottom align="center">
-            Bowling Board
-          </Typography>
-        </Box>
-      </Container>
+
+      {appPosition === AppPosition.starGame ? (
+        <StartGame />
+      ) : (
+        <ul>
+          {players.map((pl) => (
+            <li key={pl.id}>{pl.value}</li>
+          ))}
+        </ul>
+      )}
     </>
   );
 };
