@@ -19,6 +19,12 @@ const useStyles = makeStyles((theme) =>
   createStyles({
     container: {
       padding: theme.spacing(1),
+      display: "flex",
+      alignItems: "center",
+
+      "& >div": {
+        flex: "auto",
+      },
     },
   })
 );
@@ -38,23 +44,25 @@ export const PlayerTile: React.FC<Props> = ({ player }) => {
 
   return (
     <Paper className={classes.container} elevation={player.automatic ? 1 : 5}>
-      <Typography variant="h6" component="p" gutterBottom align="center">
-        {player.value}
-      </Typography>
-      <Box textAlign="center">
-        <FormControlLabel
-          control={
-            <Switch
-              checked={player.automatic}
-              onChange={onChange}
-              name="checkedB"
-              color="secondary"
-            />
-          }
-          label="Automatic"
-          labelPlacement="start"
-        />
-      </Box>
+      <div>
+        <Typography variant="h6" component="p" gutterBottom align="center">
+          {player.value}
+        </Typography>
+        <Box textAlign="center">
+          <FormControlLabel
+            control={
+              <Switch
+                checked={player.automatic}
+                onChange={onChange}
+                name="checkedB"
+                color="secondary"
+              />
+            }
+            label="Automatic"
+            labelPlacement="start"
+          />
+        </Box>
+      </div>
     </Paper>
   );
 };

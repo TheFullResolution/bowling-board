@@ -3,15 +3,34 @@ export enum AppPosition {
   gameBoard,
 }
 
-export interface Player {
+export interface StartPlayer {
   id: string;
   value: string;
+}
+
+export interface Player extends StartPlayer {
   automatic: boolean;
+  currentScore: number;
+}
+
+interface PastGame extends StartPlayer {
+  totalScore: number;
+}
+
+interface PastFrame extends StartPlayer {
+  score1: number | null;
+  score2: number | null;
 }
 
 export interface State {
   appPosition: AppPosition;
   players: Player[];
+  game: {
+    frame: number;
+    maxFrames: number;
+    pastFrames: PastFrame[];
+  };
+  pastGames: PastGame[][];
   showInstructions: boolean;
 }
 
@@ -26,12 +45,12 @@ interface UpdatePlayerAction {
 
 interface SetPlayersAction {
   type: "set-players";
-  payload: Player[];
+  payload: StartPlayer[];
 }
 
 interface DefaultStateAction {
-  type: "default-state"
-  payload: State
+  type: "default-state";
+  payload: State;
 }
 
 export type Action = UpdatePlayerAction | SetPlayersAction | DefaultStateAction;

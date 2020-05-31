@@ -1,6 +1,5 @@
 import { appState } from "./App.state";
-import { distinctUntilChanged, filter, flatMap, map } from "rxjs/operators";
-import { from } from "rxjs";
+import { distinctUntilChanged, map } from "rxjs/operators";
 
 export const appPositionSelector = appState.pipe(
   map((state) => state.appPosition),
@@ -12,9 +11,14 @@ export const playersSelector = appState.pipe(
   distinctUntilChanged()
 );
 
-export const createplayerSelector = (id: string) =>
-  playersSelector.pipe(
-    flatMap((players) => from(players)),
-    filter((player) => player.id === id),
-    distinctUntilChanged()
-  );
+// export const createplayerSelector = (id: string) =>
+//   playersSelector.pipe(
+//     flatMap((players) => from(players)),
+//     filter((player) => player.id === id),
+//     distinctUntilChanged()
+//   );
+
+export const gameSelector = appState.pipe(
+  map((state) => state.game),
+  distinctUntilChanged()
+);

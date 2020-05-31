@@ -66,7 +66,7 @@ export const StartGame: React.FC = () => {
     } else {
       appStateDispatch({
         type: "set-players",
-        payload: players.map((el) => ({ ...el, automatic: true })),
+        payload: players,
       });
     }
   };

@@ -5,7 +5,7 @@ import { Box, Container, createStyles, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { PlayerTile } from "./components/PlayerTile";
 import { useAppState } from "../App/useAppState";
-import { playersSelector } from "../App/App.selectors";
+import { gameSelector, playersSelector } from "../App/App.selectors";
 import { FrameTile } from "./components/FrameTile";
 
 interface Props {}
@@ -38,6 +38,7 @@ const useStyles = makeStyles((theme) =>
 
 export const BoardGame: React.FC<Props> = () => {
   const [players] = useAppState(playersSelector, "players");
+  const [game] = useAppState(gameSelector, "game");
   const classes = useStyles();
   return (
     <Container maxWidth="xl">
@@ -46,6 +47,9 @@ export const BoardGame: React.FC<Props> = () => {
           Bowling Board
         </Typography>
       </Box>
+      <Typography variant="h5" component="p" gutterBottom align="center">
+        Current Frame: {game.frame}
+      </Typography>
       <div className={classes.container}>
         <div className={classes.column}>
           <Typography variant="h5" component="h2" gutterBottom align="center">
@@ -61,11 +65,12 @@ export const BoardGame: React.FC<Props> = () => {
           <div />
           {players.map((player) => (
             <div className={classes.framesGrid} key={player.id}>
-              {range(10).map((frame) => (
+              {range(1, game.maxFrames + 1).map((frame) => (
                 <FrameTile
                   key={player.id + frame}
                   player={player}
                   frame={frame}
+                  currentFrame={game.frame}
                 ></FrameTile>
               ))}
             </div>

@@ -10,12 +10,13 @@ import {
 import { Player } from "../../App/App.types";
 import range from "lodash.range";
 import { makeStyles } from "@material-ui/core/styles";
-
+import cls from "classnames";
 const RANGE_FOR_POINTS = 11;
 
 interface Props {
   player: Player;
   frame: number;
+  currentFrame: number;
 }
 
 const initialFormState = {
@@ -66,6 +67,9 @@ const useStyles = makeStyles((theme) =>
       display: "flex",
       alignItems: "center",
     },
+    currentFrame: {
+      border: `3px solid ${theme.palette.secondary.light}`,
+    },
     formWrapper: {
       flex: "auto",
     },
@@ -78,8 +82,10 @@ const useStyles = makeStyles((theme) =>
   })
 );
 
-export const FrameTile: React.FC<Props> = ({ player, frame }) => {
+export const FrameTile: React.FC<Props> = ({ player, frame, currentFrame }) => {
   const [formState, dispatchChange] = useReducer(formReducer, initialFormState);
+
+  const isCurrent = frame === currentFrame;
 
   const createHandleChange = (type: Action["type"]) => (
     event: React.ChangeEvent<any>
@@ -93,8 +99,11 @@ export const FrameTile: React.FC<Props> = ({ player, frame }) => {
   const classes = useStyles();
 
   return (
-    <Paper elevation={player.automatic ? 1 : 5} className={classes.container}>
-      {!player.automatic ? (
+    <Paper
+      elevation={player.automatic ? 1 : 5}
+      className={cls(classes.container, { [classes.currentFrame]: isCurrent })}
+    >
+      {!player.automatic && isCurrent ? (
         <div className={classes.formWrapper}>
           <FormControl
             variant="outlined"
