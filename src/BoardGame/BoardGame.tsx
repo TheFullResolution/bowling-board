@@ -1,17 +1,12 @@
 import React from "react";
 import range from "lodash.range";
 import cls from "classnames";
-import { AppState } from "../App/App.state";
-import {
-  Box,
-  Container,
-  createStyles,
-  Paper,
-  Typography,
-} from "@material-ui/core";
+import { Box, Container, createStyles, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { PlayerTile } from "./components/PlayerTile";
-import { useSharedState } from "../stateUtils";
+import { useAppState } from "../App/useAppState";
+import { playersSelector } from "../App/App.selectors";
+import { FrameTile } from "./components/FrameTile";
 
 interface Props {}
 
@@ -27,7 +22,7 @@ const useStyles = makeStyles((theme) =>
       gridTemplateColumns: "auto",
       gridTemplateRows: "30px 50px",
       gridRowGap: theme.spacing(2),
-      gridAutoRows: "100px",
+      gridAutoRows: "140px",
     },
     frames: {
       overflowX: "auto",
@@ -35,15 +30,14 @@ const useStyles = makeStyles((theme) =>
     },
     framesGrid: {
       display: "grid",
-      gridTemplateColumns: "repeat(10, 100px)",
+      gridTemplateColumns: "repeat(10, 200px)",
       gridColumnGap: theme.spacing(2),
     },
   })
 );
 
 export const BoardGame: React.FC<Props> = () => {
-  const [{ players }] = useSharedState(AppState);
-
+  const [players] = useAppState(playersSelector, "players");
   const classes = useStyles();
   return (
     <Container maxWidth="xl">
@@ -68,7 +62,11 @@ export const BoardGame: React.FC<Props> = () => {
           {players.map((player) => (
             <div className={classes.framesGrid} key={player.id}>
               {range(10).map((frame) => (
-                <Paper key={player.id + frame}>Frame</Paper>
+                <FrameTile
+                  key={player.id + frame}
+                  player={player}
+                  frame={frame}
+                ></FrameTile>
               ))}
             </div>
           ))}
