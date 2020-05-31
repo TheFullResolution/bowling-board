@@ -18,12 +18,3 @@ export const useSharedState = <T extends {}>(
 
   return [value, newSetState];
 };
-
-
-export const setSharedState = <T>(
-    subject: BehaviorSubject<T>,
-    partial: Partial<T>
-) => {
-  const prev = subject.getValue()
-  subject.next({ ...prev, ...partial })
-}

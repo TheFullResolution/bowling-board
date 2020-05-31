@@ -1,8 +1,7 @@
 import React from "react";
 import range from "lodash.range";
 import cls from "classnames";
-import { useSharedState } from "../stateUtils";
-import { AppStateSubject } from "../App/App.state";
+import { AppState } from "../App/App.state";
 import {
   Box,
   Container,
@@ -11,6 +10,8 @@ import {
   Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import { PlayerTile } from "./components/PlayerTile";
+import { useSharedState } from "../stateUtils";
 
 interface Props {}
 
@@ -30,6 +31,7 @@ const useStyles = makeStyles((theme) =>
     },
     frames: {
       overflowX: "auto",
+      paddingBottom: theme.spacing(5),
     },
     framesGrid: {
       display: "grid",
@@ -40,7 +42,7 @@ const useStyles = makeStyles((theme) =>
 );
 
 export const BoardGame: React.FC<Props> = () => {
-  const [{ players }] = useSharedState(AppStateSubject);
+  const [{ players }] = useSharedState(AppState);
 
   const classes = useStyles();
   return (
@@ -57,7 +59,7 @@ export const BoardGame: React.FC<Props> = () => {
           </Typography>
           <div />
           {players.map((player) => (
-            <Paper key={player.id}>{player.value}</Paper>
+            <PlayerTile key={player.id} player={player}></PlayerTile>
           ))}
         </div>
         <div className={cls(classes.column, classes.frames)}>

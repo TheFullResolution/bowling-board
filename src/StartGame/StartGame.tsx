@@ -8,8 +8,7 @@ import {
   playersFormStateReducer,
   playersInitialState,
 } from "./playersFormState";
-import { AppPosition, AppStateSubject } from "../App/App.state";
-import { setSharedState } from "../stateUtils";
+import { appStateDispatch } from "../App/App.state";
 
 const formId = "players-form";
 
@@ -65,9 +64,9 @@ export const StartGame: React.FC = () => {
     if (!checkIfValid) {
       setShowFormValid(true);
     } else {
-      setSharedState(AppStateSubject, {
-        appPosition: AppPosition.gameBoard,
-        players,
+      appStateDispatch({
+        type: "set-players",
+        payload: players.map((el) => ({ ...el, automatic: true })),
       });
     }
   };

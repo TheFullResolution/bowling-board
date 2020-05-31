@@ -1,12 +1,13 @@
 import React from "react";
 import { CssBaseline } from "@material-ui/core";
 import { StartGame } from "../StartGame/StartGame";
-import { AppPosition, AppStateSubject } from "./App.state";
-import { useSharedState } from "../stateUtils";
 import { BoardGame } from "../BoardGame/BoardGame";
+import { AppPosition } from "./App.types";
+import { useSharedState } from "../stateUtils";
+import { AppState } from "./App.state";
 
 export const App: React.FC = () => {
-  const [{ appPosition }] = useSharedState(AppStateSubject);
+  const [{ appPosition }] = useSharedState(AppState);
 
   return (
     <>
