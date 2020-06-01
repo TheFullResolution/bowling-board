@@ -1,7 +1,6 @@
 import { Observable } from "rxjs";
 import { useEffect, useState } from "react";
-import { defaultState } from "./App.state";
-import { State } from "./App.types";
+import { defaultState, State } from "../state/App.state";
 
 interface UseAppStateParams<T extends any> {
   selector: Observable<T>;

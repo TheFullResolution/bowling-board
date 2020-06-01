@@ -8,12 +8,10 @@ import {
   Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { createPlayerSelector, PlayerState } from "../state/Player.state";
-import { Player } from "../../App/App.types";
-import { useSelector } from "../../stateUtils/useSelector";
+import { PlayerState } from "../../state/Player.state";
 
 interface Props {
-  player: Player;
+  player: PlayerState;
 }
 
 const useStyles = makeStyles((theme) =>
@@ -33,23 +31,15 @@ const useStyles = makeStyles((theme) =>
 export const PlayerTile: React.FC<Props> = ({ player }) => {
   const classes = useStyles();
 
-  const [playerState] = useSelector(createPlayerSelector(player.id), {
-    id: "",
-    automatic: false,
-  });
-
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    PlayerState.updateValue({
-      id: playerState.id,
+    PlayerState.update({
+      id: player.id,
       automatic: event.target.checked,
     });
   };
 
   return (
-    <Paper
-      className={classes.container}
-      elevation={playerState.automatic ? 1 : 5}
-    >
+    <Paper className={classes.container} elevation={player.automatic ? 1 : 5}>
       <div>
         <Typography variant="h6" component="p" gutterBottom align="center">
           {player.value}
@@ -58,7 +48,7 @@ export const PlayerTile: React.FC<Props> = ({ player }) => {
           <FormControlLabel
             control={
               <Switch
-                checked={playerState.automatic}
+                checked={player.automatic}
                 onChange={onChange}
                 name="checkedB"
                 color="secondary"

@@ -10,15 +10,14 @@ import {
 import range from "lodash.range";
 import { makeStyles } from "@material-ui/core/styles";
 import cls from "classnames";
-import { Player } from "../../App/App.types";
 import { useSelector } from "../../stateUtils/useSelector";
-import { createFrameSelector, FrameState } from "../state/Frame.state";
-import { createPlayerSelector } from "../state/Player.state";
+import { createFrameSelector, FrameState } from "../../state/Frame.state";
+import { PlayerState } from "../../state/Player.state";
 
 const RANGE_FOR_POINTS = 11;
 
 interface Props {
-  player: Player;
+  player: PlayerState;
   frame: number;
   currentFrame: number;
 }
@@ -53,10 +52,6 @@ export const FrameTile: React.FC<Props> = ({ player, frame, currentFrame }) => {
     score1: null,
     score2: null,
   });
-  const [playerState] = useSelector(createPlayerSelector(player.id), {
-    id: "",
-    automatic: false,
-  });
 
   const createHandleChange = (type: "score1" | "score2") => (
     event: React.ChangeEvent<any>
@@ -65,12 +60,12 @@ export const FrameTile: React.FC<Props> = ({ player, frame, currentFrame }) => {
       type === "score1"
         ? { score1: event.target.value }
         : { score2: event.target.value };
-    FrameState.updateValue({ id: player.id, ...val });
+    FrameState.update({ id: player.id, ...val });
   };
 
   useEffect(() => {
-    FrameState.updateValue({ id: player.id, score1: null, score2: null });
-  }, [player.id, playerState.automatic]);
+    FrameState.update({ id: player.id, score1: null, score2: null });
+  }, [player.id, player.automatic]);
 
   const classes = useStyles();
 
@@ -78,10 +73,10 @@ export const FrameTile: React.FC<Props> = ({ player, frame, currentFrame }) => {
 
   return (
     <Paper
-      elevation={playerState.automatic ? 1 : 5}
+      elevation={player.automatic ? 1 : 5}
       className={cls(classes.container, { [classes.currentFrame]: isCurrent })}
     >
-      {!playerState.automatic && isCurrent ? (
+      {!player.automatic && isCurrent ? (
         <div className={classes.formWrapper}>
           <FormControl
             variant="outlined"
@@ -112,8 +107,7 @@ export const FrameTile: React.FC<Props> = ({ player, frame, currentFrame }) => {
             <Select
               labelId="select-label-2"
               id="select-2"
-              disabled={score2options === 0}
-              value={frameState.score2 ?? ""}
+              value={frameState.score1 === 10 ? 0 : frameState.score2 ?? ""}
               onChange={createHandleChange("score2")}
               label="Second Round"
             >
