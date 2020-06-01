@@ -8,7 +8,7 @@ import {
   playersFormStateReducer,
   playersInitialState,
 } from "./playersFormState";
-import { appStateDispatch } from "../App/App.state";
+import { setPlayers } from "../App/App.state";
 
 const formId = "players-form";
 
@@ -64,10 +64,7 @@ export const StartGame: React.FC = () => {
     if (!checkIfValid) {
       setShowFormValid(true);
     } else {
-      appStateDispatch({
-        type: "set-players",
-        payload: players,
-      });
+      setPlayers(players);
     }
   };
   const classes = useStyles();

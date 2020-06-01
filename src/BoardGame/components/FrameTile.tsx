@@ -1,4 +1,4 @@
-import React, { useReducer } from "react";
+import React, { useEffect } from "react";
 import {
   createStyles,
   FormControl,
@@ -7,10 +7,14 @@ import {
   Paper,
   Select,
 } from "@material-ui/core";
-import { Player } from "../../App/App.types";
 import range from "lodash.range";
 import { makeStyles } from "@material-ui/core/styles";
 import cls from "classnames";
+import { Player } from "../../App/App.types";
+import { useSelector } from "../../stateUtils/useSelector";
+import { createFrameSelector, FrameState } from "../state/Frame.state";
+import { createPlayerSelector } from "../state/Player.state";
+
 const RANGE_FOR_POINTS = 11;
 
 interface Props {
@@ -18,47 +22,6 @@ interface Props {
   frame: number;
   currentFrame: number;
 }
-
-const initialFormState = {
-  firstValue: "" as const,
-  firstOptions: RANGE_FOR_POINTS,
-  secondValue: "" as const,
-  secondOptions: RANGE_FOR_POINTS,
-};
-
-interface FormState {
-  firstValue: "" | number;
-  firstOptions: number;
-  secondValue: "" | number;
-  secondOptions: number;
-}
-
-interface Action {
-  type: "updateFirst" | "updateSecond";
-  value: number | "";
-}
-
-const formReducer = (state: FormState, action: Action): FormState => {
-  switch (action.type) {
-    case "updateFirst": {
-      const secondOptions =
-        typeof action.value === "number"
-          ? RANGE_FOR_POINTS - action.value
-          : RANGE_FOR_POINTS;
-
-      return {
-        ...state,
-        firstValue: action.value,
-        secondValue: "",
-        secondOptions,
-      };
-    }
-
-    case "updateSecond": {
-      return { ...state, secondValue: action.value };
-    }
-  }
-};
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -83,27 +46,42 @@ const useStyles = makeStyles((theme) =>
 );
 
 export const FrameTile: React.FC<Props> = ({ player, frame, currentFrame }) => {
-  const [formState, dispatchChange] = useReducer(formReducer, initialFormState);
-
   const isCurrent = frame === currentFrame;
 
-  const createHandleChange = (type: Action["type"]) => (
+  const [frameState] = useSelector(createFrameSelector(player.id), {
+    id: "",
+    score1: null,
+    score2: null,
+  });
+  const [playerState] = useSelector(createPlayerSelector(player.id), {
+    id: "",
+    automatic: false,
+  });
+
+  const createHandleChange = (type: "score1" | "score2") => (
     event: React.ChangeEvent<any>
   ) => {
-    dispatchChange({
-      type,
-      value: event.target.value,
-    });
+    const val =
+      type === "score1"
+        ? { score1: event.target.value }
+        : { score2: event.target.value };
+    FrameState.updateValue({ id: player.id, ...val });
   };
+
+  useEffect(() => {
+    FrameState.updateValue({ id: player.id, score1: null, score2: null });
+  }, [player.id, playerState.automatic]);
 
   const classes = useStyles();
 
+  const score2options = RANGE_FOR_POINTS - (frameState.score1 ?? 0);
+
   return (
     <Paper
-      elevation={player.automatic ? 1 : 5}
+      elevation={playerState.automatic ? 1 : 5}
       className={cls(classes.container, { [classes.currentFrame]: isCurrent })}
     >
-      {!player.automatic && isCurrent ? (
+      {!playerState.automatic && isCurrent ? (
         <div className={classes.formWrapper}>
           <FormControl
             variant="outlined"
@@ -114,11 +92,11 @@ export const FrameTile: React.FC<Props> = ({ player, frame, currentFrame }) => {
             <Select
               labelId="select-label-1"
               id="select-1"
-              value={formState.firstValue}
-              onChange={createHandleChange("updateFirst")}
+              value={frameState.score1 ?? ""}
+              onChange={createHandleChange("score1")}
               label="First Round"
             >
-              {range(formState.firstOptions).map((option) => (
+              {range(RANGE_FOR_POINTS).map((option) => (
                 <MenuItem key={option} value={option}>
                   {option}
                 </MenuItem>
@@ -134,12 +112,12 @@ export const FrameTile: React.FC<Props> = ({ player, frame, currentFrame }) => {
             <Select
               labelId="select-label-2"
               id="select-2"
-              value={formState.secondValue}
-              disabled={formState.secondOptions === 0}
-              onChange={createHandleChange("updateSecond")}
+              disabled={score2options === 0}
+              value={frameState.score2 ?? ""}
+              onChange={createHandleChange("score2")}
               label="Second Round"
             >
-              {range(formState.secondOptions).map((option) => (
+              {range(score2options).map((option) => (
                 <MenuItem key={option} value={option}>
                   {option}
                 </MenuItem>

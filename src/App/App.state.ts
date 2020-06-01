@@ -1,61 +1,26 @@
-import { Subject } from "rxjs";
-import { publishReplay, refCount, scan } from "rxjs/operators";
-import { Action, AppPosition, Player, State } from "./App.types";
+import {BehaviorSubject} from 'rxjs'
+import {AppPosition, Player, State} from './App.types'
 
 export const defaultState: State = {
   appPosition: AppPosition.gameBoard,
   players: [
-    { id: "players1", value: "Stefand", automatic: true, currentScore: 0 },
-    { id: "players2", value: "Stefands", automatic: false, currentScore: 0 },
+    { id: "players1", value: "Stefand" },
+    { id: "players2", value: "Stefands" },
   ],
   game: {
     frame: 1,
     maxFrames: 10,
-    pastFrames: [],
   },
-  pastGames: [],
   showInstructions: true,
 };
 
-const stateActions = new Subject<Action>();
+export const AppState = new BehaviorSubject<State>(defaultState);
 
-export const appState = stateActions.pipe(
-  scan((state: State, action: Action): State => {
-    switch (action.type) {
-      case "update-player":
-        const updatedPlayers = state.players.reduce<Player[]>((arr, player) => {
-          if (player.id === action.payload.id) {
-            player = {
-              ...player,
-              ...action.payload,
-            };
-          }
-          arr.push(player);
-          return arr;
-        }, []);
+export const setPlayers = (players: Player[]) => {
+  const state = AppState.getValue();
 
-        return { ...state, players: updatedPlayers };
-
-      case "set-players":
-        return {
-          ...state,
-          players: action.payload.map((player) => ({
-            ...player,
-            currentScore: 0,
-            automatic: false,
-          })),
-          appPosition: AppPosition.gameBoard,
-        };
-      case "default-state":
-        return action.payload;
-      default:
-        return state;
-    }
-  }, defaultState),
-  publishReplay(1),
-  refCount()
-);
-
-export const appStateDispatch = (action: Action) => {
-  stateActions.next(action);
+  AppState.next({
+    ...state,
+    players,
+  });
 };

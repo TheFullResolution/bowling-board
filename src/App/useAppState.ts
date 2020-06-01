@@ -1,11 +1,17 @@
 import { Observable } from "rxjs";
 import { useEffect, useState } from "react";
 import { defaultState } from "./App.state";
+import { State } from "./App.types";
 
-export const useAppState = <T extends any>(
-  selector: Observable<T>,
-  defaultStateKey: keyof typeof defaultState
-): [T] => {
+interface UseAppStateParams<T extends any> {
+  selector: Observable<T>;
+  defaultStateKey: keyof State;
+}
+
+export const useAppState = <T extends any>({
+  selector,
+  defaultStateKey,
+}: UseAppStateParams<T>): [T] => {
   const [value, setState] = useState<T>(defaultState[defaultStateKey] as T);
 
   useEffect(() => {

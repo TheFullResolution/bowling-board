@@ -1,24 +1,17 @@
-import { appState } from "./App.state";
 import { distinctUntilChanged, map } from "rxjs/operators";
+import { AppState } from "./App.state";
 
-export const appPositionSelector = appState.pipe(
+export const appPositionSelector = AppState.pipe(
   map((state) => state.appPosition),
   distinctUntilChanged()
 );
 
-export const playersSelector = appState.pipe(
+export const playersSelector = AppState.pipe(
   map((state) => state.players),
   distinctUntilChanged()
 );
 
-// export const createplayerSelector = (id: string) =>
-//   playersSelector.pipe(
-//     flatMap((players) => from(players)),
-//     filter((player) => player.id === id),
-//     distinctUntilChanged()
-//   );
-
-export const gameSelector = appState.pipe(
+export const gameSelector = AppState.pipe(
   map((state) => state.game),
   distinctUntilChanged()
 );

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import range from "lodash.range";
 import cls from "classnames";
 import { Box, Container, createStyles, Typography } from "@material-ui/core";
@@ -7,6 +7,9 @@ import { PlayerTile } from "./components/PlayerTile";
 import { useAppState } from "../App/useAppState";
 import { gameSelector, playersSelector } from "../App/App.selectors";
 import { FrameTile } from "./components/FrameTile";
+import { GameControl } from "./components/GameControl";
+import { FrameState } from "./state/Frame.state";
+import { PlayerState } from "./state/Player.state";
 
 interface Props {}
 
@@ -37,8 +40,20 @@ const useStyles = makeStyles((theme) =>
 );
 
 export const BoardGame: React.FC<Props> = () => {
-  const [players] = useAppState(playersSelector, "players");
-  const [game] = useAppState(gameSelector, "game");
+  const [players] = useAppState({
+    selector: playersSelector,
+    defaultStateKey: "players",
+  });
+  const [game] = useAppState({
+    selector: gameSelector,
+    defaultStateKey: "game",
+  });
+
+  useEffect(() => {
+    FrameState.init();
+    PlayerState.init();
+  }, []);
+
   const classes = useStyles();
   return (
     <Container maxWidth="xl">
@@ -47,9 +62,7 @@ export const BoardGame: React.FC<Props> = () => {
           Bowling Board
         </Typography>
       </Box>
-      <Typography variant="h5" component="p" gutterBottom align="center">
-        Current Frame: {game.frame}
-      </Typography>
+      <GameControl currentFrame={game.frame} />
       <div className={classes.container}>
         <div className={classes.column}>
           <Typography variant="h5" component="h2" gutterBottom align="center">

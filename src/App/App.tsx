@@ -1,18 +1,21 @@
-import React from "react";
-import { CssBaseline } from "@material-ui/core";
-import { StartGame } from "../StartGame/StartGame";
-import { BoardGame } from "../BoardGame/BoardGame";
-import { AppPosition } from "./App.types";
-import { useAppState } from "./useAppState";
-import { appPositionSelector } from "./App.selectors";
+import React from 'react'
+import {CssBaseline, ThemeProvider} from '@material-ui/core'
+import {StartGame} from '../StartGame/StartGame'
+import {BoardGame} from '../BoardGame/BoardGame'
+import {AppPosition} from './App.types'
+import {useAppState} from './useAppState'
+import {appPositionSelector} from './App.selectors'
+import {theme} from '../theme'
 
 export const App: React.FC = () => {
-  const [appPosition] = useAppState(appPositionSelector, "appPosition");
+  const [appPosition] = useAppState({selector: appPositionSelector, defaultStateKey: "appPosition"});
 
   return (
-    <>
-      <CssBaseline></CssBaseline>
-      {appPosition === AppPosition.starGame ? <StartGame /> : <BoardGame />}
-    </>
+    <ThemeProvider theme={theme}>
+      <>
+        <CssBaseline></CssBaseline>
+        {appPosition === AppPosition.starGame ? <StartGame /> : <BoardGame />}
+      </>
+    </ThemeProvider>
   );
 };
