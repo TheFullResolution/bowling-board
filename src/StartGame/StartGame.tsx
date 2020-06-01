@@ -2,14 +2,13 @@ import React, { useReducer, useState } from "react";
 import { Box, Button, Container, Typography } from "@material-ui/core";
 import { PlayerForm } from "./components/PlayerForm";
 import { Dialog } from "./components/Dialog";
-import banner from "../App/banner.jpg";
+import banner from "./banner.jpg";
 import { makeStyles } from "@material-ui/core/styles";
 import {
   playersFormStateReducer,
   playersInitialState,
 } from "./playersFormState";
-import { AppPosition, AppStateSubject } from "../App/App.state";
-import { setSharedState } from "../stateUtils";
+import { updateSessionState } from "../state/Session.state";
 
 const formId = "players-form";
 
@@ -65,10 +64,7 @@ export const StartGame: React.FC = () => {
     if (!checkIfValid) {
       setShowFormValid(true);
     } else {
-      setSharedState(AppStateSubject, {
-        appPosition: AppPosition.gameBoard,
-        players,
-      });
+      updateSessionState({ players });
     }
   };
   const classes = useStyles();
