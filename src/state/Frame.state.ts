@@ -1,8 +1,15 @@
 import { BehaviorSubject, from, Subject } from "rxjs";
-import { distinctUntilChanged, filter, flatMap, map } from "rxjs/operators";
-import { sessionPlayerSelector } from "./Session.state";
-import { gameFrameSelector } from "./Game.state";
-import { ScoreState } from "./Score/Score.state";
+import {
+  distinctUntilChanged,
+  filter,
+  flatMap,
+  map,
+  reduce,
+  share,
+  withLatestFrom,
+} from "rxjs/operators";
+import { sessionPlayerSelector, SetPlayers } from "./Session.state";
+import { scoreStateSelector } from "./Score/Score.state";
 
 export interface FrameState {
   id: string;
@@ -18,21 +25,31 @@ const frameStateSubject = new BehaviorSubject<FrameState[]>([]);
 
 const frameStateDispatcher = new Subject<UpdateFrame>();
 
+const getInitialFrameState = (players: SetPlayers[]) =>
+  from(players).pipe(
+    map(({ id }) => ({ id, score1: null, score2: null })),
+    reduce((arr, el) => {
+      arr.push(el);
+      return arr;
+    }, [] as FrameState[])
+  );
+
 export const FrameState = {
   init: () => {
-    sessionPlayerSelector.subscribe((players) => {
-      frameStateSubject.next(
-        players.map(({ id }) => ({ id, score1: null, score2: null }))
-      );
-    });
+    sessionPlayerSelector
+      .pipe(flatMap((players) => getInitialFrameState(players)))
+      .subscribe((players) => {
+        frameStateSubject.next(players);
+      });
 
-    gameFrameSelector.subscribe((frame) => {
-      const frameState = frameStateSubject.getValue();
-      ScoreState.update(frameState);
-      frameStateSubject.next(
-        frameState.map(({ id }) => ({ id, score1: null, score2: null }))
-      );
-    });
+    scoreStateSelector
+      .pipe(
+        withLatestFrom(sessionPlayerSelector),
+        flatMap(([scoreState, players]) => getInitialFrameState(players))
+      )
+      .subscribe((players) => {
+        frameStateSubject.next(players);
+      });
 
     frameStateDispatcher
       .pipe(
@@ -59,7 +76,9 @@ export const FrameState = {
   },
 };
 
-export const frameStateSelector = frameStateSubject.asObservable();
+export const frameStateSelector = frameStateSubject
+  .asObservable()
+  .pipe(share());
 
 export const createFrameSelector = (id: string) =>
   frameStateSubject.pipe(

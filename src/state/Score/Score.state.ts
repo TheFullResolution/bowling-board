@@ -2,14 +2,18 @@ import { BehaviorSubject, from, Subject } from "rxjs";
 import {
   filter,
   flatMap,
+  groupBy,
   map,
   reduce,
+  share,
+  skip,
   skipWhile,
   withLatestFrom,
 } from "rxjs/operators";
-import { FrameState } from "../Frame.state";
+import { FrameState, frameStateSelector } from "../Frame.state";
 import { processNewFrame } from "./processNewFrame";
 import { recalculateScores } from "./recalculateScores";
+import { gameStateSelector } from "../Game.state";
 
 export interface ScoreState extends FrameState {
   score1: number;
@@ -17,6 +21,7 @@ export interface ScoreState extends FrameState {
   points: number;
   addFramesToPoints: number;
   strike: boolean;
+  spare: boolean;
 }
 
 const scoreStateSubject = new BehaviorSubject<ScoreState[][]>([]);
@@ -25,9 +30,11 @@ const scoreDispatcher = new Subject<FrameState[]>();
 
 export const ScoreState = {
   init: () => {
-    scoreDispatcher
+    gameStateSelector
       .pipe(
-        flatMap((frameState) => processNewFrame(frameState)),
+        skip(1),
+        withLatestFrom(frameStateSelector),
+        flatMap(([frame, frameState]) => processNewFrame(frameState)),
         withLatestFrom(scoreStateSubject),
         flatMap(([frameState, scoreState]) => {
           scoreState.push(frameState);
@@ -43,6 +50,31 @@ export const ScoreState = {
     scoreDispatcher.next(frame);
   },
 };
+
+export const scoreStateSelector = scoreStateSubject
+  .asObservable()
+  .pipe(share());
+
+export const scoreStateTotals = scoreStateSubject.pipe(
+  flatMap((scores) =>
+    from(scores).pipe(
+      flatMap((scores) => scores),
+      groupBy((score) => score.id),
+      flatMap((group) =>
+        group.pipe(
+          reduce(
+            (acc, score) => {
+              acc.id = acc.id || score.id;
+              acc.points = acc.points + score.points;
+              return acc;
+            },
+            { id: "", points: 0 } as { id: string; points: number }
+          )
+        )
+      )
+    )
+  )
+);
 
 export const createScoreFrameSelector = (frame: number, id: string) => {
   return scoreStateSubject.pipe(

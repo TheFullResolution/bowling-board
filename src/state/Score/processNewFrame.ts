@@ -28,6 +28,7 @@ export function processNewFrame(frameState: FrameState[]) {
         points: score1 + score2,
         addFramesToPoints: 0,
         strike: false,
+        spare: false,
       };
     }),
     map((frame) => {
@@ -41,6 +42,7 @@ export function processNewFrame(frameState: FrameState[]) {
         return {
           ...frame,
           addFramesToPoints: 1,
+          spare: true,
         };
       } else return frame;
     }),

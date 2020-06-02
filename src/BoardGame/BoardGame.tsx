@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme) =>
     },
     framesGrid: {
       display: "grid",
-      gridTemplateColumns: "repeat(10, 200px)",
+      gridTemplateColumns: "repeat(11, 200px)",
       gridColumnGap: theme.spacing(2),
     },
   })
@@ -44,8 +44,8 @@ export const BoardGame: React.FC<Props> = () => {
 
   const [players] = useSelector(playersSelector, []);
   const [game] = useSelector(gameStateSelector, {
-    frame: 1,
-    maxFrames: 10,
+    frame: 0,
+    maxFrames: 0,
   });
 
   const frames = range(1, game.maxFrames + 1);
@@ -74,6 +74,7 @@ export const BoardGame: React.FC<Props> = () => {
             {frames.map((frame) => {
               const isCurrent = frame === game.frame;
               const isPast = frame < game.frame;
+              const isLast = frame === game.maxFrames;
               return (
                 <Typography
                   variant="h6"
@@ -83,24 +84,32 @@ export const BoardGame: React.FC<Props> = () => {
                   key={frame}
                   id={`frame-${frame}`}
                   color={
-                    isCurrent ? "secondary" : isPast ? "textSecondary" : "initial"
+                    isCurrent
+                      ? "secondary"
+                      : isPast
+                      ? "textSecondary"
+                      : "initial"
                   }
                 >
-                  Frame {frame}
+                  {isLast ? "Extra Throws" : `Frame ${frame}`}
                 </Typography>
               );
             })}
           </div>
           {players.map((player) => (
             <div className={classes.framesGrid} key={player.id}>
-              {frames.map((frame) => (
-                <FrameTile
-                  key={player.id + frame}
-                  player={player}
-                  frame={frame}
-                  currentFrame={game.frame}
-                />
-              ))}
+              {frames.map((frame) => {
+                const isLast = frame === game.maxFrames;
+                return (
+                  <FrameTile
+                    key={player.id + frame}
+                    player={player}
+                    frame={frame}
+                    currentFrame={game.frame}
+                    isLast={isLast}
+                  />
+                );
+              })}
             </div>
           ))}
         </div>
