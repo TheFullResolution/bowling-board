@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, {useEffect, useRef} from 'react'
 import {
   createStyles,
   FormControl,
@@ -20,13 +20,27 @@ import { useSelector } from "../../stateUtils/useSelector";
 import { createFrameSelector, FrameState } from "../../state/Frame.state";
 import { PlayerState } from "../../state";
 import { RANGE_FOR_POINTS } from "../../config";
-import { createScoreFrameSelector } from "../../state/Score.state";
+import { createScoreFrameSelector } from "../../state/Score/Score.state";
 
 interface Props {
   player: PlayerState;
   frame: number;
   currentFrame: number;
 }
+
+const getScoreDisplay = (score1 = 0, score2 = 0) => {
+  let scoreDisplay1 = !score1 ? "_" : score1;
+  let scoreDisplay2 = !score2 ? "_" : score2;
+
+  if (score1 === 10) {
+    scoreDisplay1 = "X";
+    scoreDisplay2 = "";
+  } else if (score1 + score2 === 10) {
+    scoreDisplay2 = "/";
+  }
+
+  return { scoreDisplay1, scoreDisplay2 };
+};
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -60,17 +74,22 @@ export const FrameTile: React.FC<Props> = ({ player, frame, currentFrame }) => {
   const isCurrent = frame === currentFrame;
   const isPast = frame < currentFrame;
 
-  const [frameState] = useSelector(createFrameSelector(player.id), {
+  const scoreFrameSelector = useRef(createScoreFrameSelector(frame, player.id))
+  const frameSelector = useRef(createFrameSelector(player.id));
+
+  const [frameState] = useSelector(frameSelector.current, {
     id: "",
     score1: null,
     score2: null,
   });
 
-  const [scoreState] = useSelector(createScoreFrameSelector(frame, player.id), {
+  const [scoreState] = useSelector(scoreFrameSelector.current, {
     id: "",
     score1: 0,
     score2: 0,
     points: 0,
+    strike: false,
+    addFramesToPoints: 0
   });
 
   const createHandleChange = (type: "score1" | "score2") => (
@@ -90,6 +109,11 @@ export const FrameTile: React.FC<Props> = ({ player, frame, currentFrame }) => {
   const classes = useStyles();
 
   const score2options = RANGE_FOR_POINTS - (frameState.score1 ?? 0);
+
+  const { scoreDisplay1, scoreDisplay2 } = getScoreDisplay(
+    scoreState?.score1,
+    scoreState?.score2
+  );
 
   return (
     <Paper
@@ -151,8 +175,8 @@ export const FrameTile: React.FC<Props> = ({ player, frame, currentFrame }) => {
               </TableHead>
               <TableBody>
                 <TableRow>
-                  <TableCell align="center">{scoreState?.score1}</TableCell>
-                  <TableCell align="center">{scoreState?.score2}</TableCell>
+                  <TableCell align="center">{scoreDisplay1}</TableCell>
+                  <TableCell align="center">{scoreDisplay2}</TableCell>
                 </TableRow>
                 <TableRow className={classes.pointsRow}>
                   <TableCell
