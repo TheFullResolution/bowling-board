@@ -2,7 +2,7 @@ import React, { useRef } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Avatar, createStyles, Paper } from "@material-ui/core";
 import { useSelector } from "../../stateUtils/useSelector";
-import { createScoreTotalSelector } from "../../state/Score/Score.state";
+import { createScoreTotalSelector } from "../../App/GameStates/Score/Score.state";
 import cls from "classnames";
 
 interface Props {

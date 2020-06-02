@@ -2,10 +2,10 @@ import React from "react";
 import { createStyles, Paper } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import cls from "classnames";
-import { PlayerState } from "../../state";
 import { FrameTileForm } from "./FrameTileForm";
 import { FrameTileResults } from "./FrameTileResults";
 import { FrameTileLastWrapper } from "./FrameTileLastWrapper";
+import { PlayerState } from "../../App/App.state";
 
 interface Props {
   player: PlayerState;
@@ -54,7 +54,9 @@ export const FrameTile: React.FC<Props> = ({
       ) : !player.automatic && isCurrent ? (
         <FrameTileForm player={player} />
       ) : (
-        isPast && <FrameTileResults frame={frame} player={player} isLast={isLast} />
+        isPast && (
+          <FrameTileResults frame={frame} player={player} isLast={isLast} />
+        )
       )}
     </Paper>
   );

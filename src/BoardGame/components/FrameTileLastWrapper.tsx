@@ -1,9 +1,9 @@
 import React, { useRef } from "react";
-import { PlayerState } from "../../state";
-import { createScoreFrameSelector } from "../../state/Score/Score.state";
+import { createScoreFrameSelector } from "../../App/GameStates/Score/Score.state";
 import { useSelector } from "../../stateUtils/useSelector";
 import { FrameTileForm } from "./FrameTileForm";
 import { Typography } from "@material-ui/core";
+import { PlayerState } from "../../App/App.state";
 
 interface Props {
   player: PlayerState;

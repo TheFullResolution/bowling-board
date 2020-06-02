@@ -9,9 +9,10 @@ import {
 import range from "lodash.range";
 import { RANGE_FOR_POINTS } from "../../config";
 import { makeStyles } from "@material-ui/core/styles";
-import { FrameState, PlayerState } from "../../state";
-import { createFrameSelector } from "../../state/Frame.state";
+import { createFrameSelector } from "../../App/GameStates/Frame.state";
 import { useSelector } from "../../stateUtils/useSelector";
+import { AppState, PlayerState } from "../../App/App.state";
+import { ActionType } from "../../App/App.actions";
 
 interface Props {
   player: PlayerState;
@@ -53,7 +54,8 @@ export const FrameTileForm: React.FC<Props> = ({
   const score2options = RANGE_FOR_POINTS - (frameState.score1 ?? 0);
 
   useEffect(() => {
-    FrameState.update({ id: player.id, score1: null, score2: null });
+    const payload = { id: player.id, score1: null, score2: null };
+    AppState.dispatch({ type: ActionType.updateFrame, payload });
   }, [player.id, player.automatic]);
 
   const createHandleChange = (type: "score1" | "score2") => (
@@ -63,7 +65,10 @@ export const FrameTileForm: React.FC<Props> = ({
       type === "score1"
         ? { score1: event.target.value }
         : { score2: event.target.value };
-    FrameState.update({ id: player.id, ...val });
+    AppState.dispatch({
+      type: ActionType.updateFrame,
+      payload: { id: player.id, ...val },
+    });
   };
 
   const score2Value =

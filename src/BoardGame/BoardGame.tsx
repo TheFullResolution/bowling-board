@@ -7,9 +7,9 @@ import { PlayerTile } from "./components/PlayerTile";
 import { FrameTile } from "./components/FrameTile";
 import { GameControl } from "./components/GameControl";
 import { useSelector } from "../stateUtils/useSelector";
-import { playersSelector } from "../state/Player.state";
-import { gameStateSelector } from "../state/Game.state";
 import { ScoreTile } from "./components/ScoreTile";
+import { playersSelector } from "../App/App.state";
+import {gameStateSelector} from '../App/GameStates/Game.state'
 
 interface Props {}
 
@@ -41,11 +41,11 @@ const useStyles = makeStyles((theme) =>
 
 export const BoardGame: React.FC<Props> = () => {
   const classes = useStyles();
-
   const [players] = useSelector(playersSelector, []);
   const [game] = useSelector(gameStateSelector, {
     frame: 0,
     maxFrames: 0,
+    finished: 1,
   });
 
   const frames = range(1, game.maxFrames + 1);
@@ -57,7 +57,7 @@ export const BoardGame: React.FC<Props> = () => {
           Bowling Board
         </Typography>
       </Box>
-      <GameControl currentFrame={game.frame} />
+      <GameControl gameState={game} />
       <div className={classes.container}>
         <div className={classes.column}>
           <Typography variant="h5" component="h2" gutterBottom align="center">

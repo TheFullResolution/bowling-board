@@ -2,8 +2,8 @@ import {FrameState} from '../Frame.state'
 import {ScoreState} from './Score.state'
 import {from} from 'rxjs'
 import {map, reduce} from 'rxjs/operators'
-import {weightedRand} from '../../stateUtils/weightedRand'
-import {RANGE_FOR_POINTS} from '../../config'
+import {weightedRand} from '../../../stateUtils/weightedRand'
+import {RANGE_FOR_POINTS} from '../../../config'
 
 
 export function getExtraFrame(frameState: FrameState[], lastScoreState: ScoreState[]) {

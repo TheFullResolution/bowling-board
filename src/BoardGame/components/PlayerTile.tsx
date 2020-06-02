@@ -8,7 +8,8 @@ import {
   Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { PlayerState } from "../../state";
+import { AppState, PlayerState } from "../../App/App.state";
+import { ActionType } from "../../App/App.actions";
 
 interface Props {
   player: PlayerState;
@@ -32,9 +33,9 @@ export const PlayerTile: React.FC<Props> = ({ player }) => {
   const classes = useStyles();
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    PlayerState.update({
-      id: player.id,
-      automatic: event.target.checked,
+    AppState.dispatch({
+      type: ActionType.updatePlayer,
+      payload: { id: player.id, automatic: event.target.checked },
     });
   };
 

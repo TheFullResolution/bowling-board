@@ -13,7 +13,6 @@ import {
 import { FrameState, frameStateSelector } from "../Frame.state";
 import { processNewFrame } from "./processNewFrame";
 import { recalculateScores } from "./recalculateScores";
-import { gameStateSelector } from "../Game.state";
 import { recalculateLatsScores } from "./recalculateLastScores";
 import { getExtraFrame } from "./getExtraFrame";
 
@@ -27,7 +26,7 @@ export interface ScoreState extends FrameState {
 }
 
 const scoreStateSubject = new BehaviorSubject<ScoreState[][]>([]);
-
+const gameStateSelector  = new Subject<any>()
 const scoreDispatcher = new Subject<FrameState[]>();
 
 export const ScoreState = {
