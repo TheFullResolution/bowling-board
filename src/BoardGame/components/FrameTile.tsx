@@ -54,7 +54,7 @@ export const FrameTile: React.FC<Props> = ({
       ) : !player.automatic && isCurrent ? (
         <FrameTileForm player={player} />
       ) : (
-        isPast && <FrameTileResults frame={frame} player={player} />
+        isPast && <FrameTileResults frame={frame} player={player} isLast={isLast} />
       )}
     </Paper>
   );

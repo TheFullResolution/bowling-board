@@ -15,6 +15,7 @@ import { makeStyles } from "@material-ui/core/styles";
 
 interface Props {
   frame: number;
+  isLast: boolean;
   player: PlayerState;
 }
 
@@ -29,11 +30,14 @@ const useStyles = makeStyles((theme) =>
   })
 );
 
-const getScoreDisplay = (score1 = 0, score2 = 0) => {
+const getScoreDisplay = (isLast: boolean, score1 = 0, score2 = 0) => {
   let scoreDisplay1 = !score1 ? "_" : score1;
   let scoreDisplay2 = !score2 ? "_" : score2;
 
-  if (score1 === 10) {
+  if (isLast) {
+    scoreDisplay1 = score1 === 10 ? "X" : scoreDisplay1;
+    scoreDisplay2 = score2 === 10 ? "X" : scoreDisplay2;
+  } else if (score1 === 10) {
     scoreDisplay1 = "X";
     scoreDisplay2 = "";
   } else if (score1 + score2 === 10) {
@@ -43,7 +47,11 @@ const getScoreDisplay = (score1 = 0, score2 = 0) => {
   return { scoreDisplay1, scoreDisplay2 };
 };
 
-export const FrameTileResults: React.FC<Props> = ({ player, frame }) => {
+export const FrameTileResults: React.FC<Props> = ({
+  player,
+  frame,
+  isLast,
+}) => {
   const classes = useStyles();
 
   const scoreFrameSelector = useRef(createScoreFrameSelector(frame, player.id));
@@ -59,6 +67,7 @@ export const FrameTileResults: React.FC<Props> = ({ player, frame }) => {
   });
 
   const { scoreDisplay1, scoreDisplay2 } = getScoreDisplay(
+    isLast,
     scoreState?.score1,
     scoreState?.score2
   );
@@ -77,18 +86,20 @@ export const FrameTileResults: React.FC<Props> = ({ player, frame }) => {
             <TableCell align="center">{scoreDisplay1}</TableCell>
             <TableCell align="center">{scoreDisplay2}</TableCell>
           </TableRow>
-          <TableRow className={classes.pointsRow}>
-            <TableCell
-              align="center"
-              className={classes.points}
-              component={"th"}
-            >
-              Points
-            </TableCell>
-            <TableCell align="center" className={classes.points}>
-              {scoreState?.points}
-            </TableCell>
-          </TableRow>
+          {!isLast && (
+            <TableRow className={classes.pointsRow}>
+              <TableCell
+                align="center"
+                className={classes.points}
+                component={"th"}
+              >
+                Points
+              </TableCell>
+              <TableCell align="center" className={classes.points}>
+                {scoreState?.points}
+              </TableCell>
+            </TableRow>
+          )}
         </TableBody>
       </Table>
     </TableContainer>

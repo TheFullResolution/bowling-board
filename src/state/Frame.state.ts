@@ -5,7 +5,7 @@ import {
   flatMap,
   map,
   reduce,
-  share,
+  tap,
   withLatestFrom,
 } from "rxjs/operators";
 import { sessionPlayerSelector, SetPlayers } from "./Session.state";
@@ -37,13 +37,17 @@ const getInitialFrameState = (players: SetPlayers[]) =>
 export const FrameState = {
   init: () => {
     sessionPlayerSelector
-      .pipe(flatMap((players) => getInitialFrameState(players)))
+      .pipe(
+        tap((el) => console.log({ el })),
+        flatMap((players) => getInitialFrameState(players))
+      )
       .subscribe((players) => {
         frameStateSubject.next(players);
       });
 
     scoreStateSelector
       .pipe(
+        tap((el) => console.log({ el })),
         withLatestFrom(sessionPlayerSelector),
         flatMap(([scoreState, players]) => getInitialFrameState(players))
       )
@@ -67,7 +71,8 @@ export const FrameState = {
             }
             return el;
           });
-        })
+        }),
+        tap((el) => console.log({ el }))
       )
       .subscribe((newState) => frameStateSubject.next(newState));
   },
@@ -76,9 +81,7 @@ export const FrameState = {
   },
 };
 
-export const frameStateSelector = frameStateSubject
-  .asObservable()
-  .pipe(share());
+export const frameStateSelector = frameStateSubject.asObservable();
 
 export const createFrameSelector = (id: string) =>
   frameStateSubject.pipe(

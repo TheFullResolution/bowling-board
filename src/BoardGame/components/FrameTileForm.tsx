@@ -66,6 +66,9 @@ export const FrameTileForm: React.FC<Props> = ({
     FrameState.update({ id: player.id, ...val });
   };
 
+  const score2Value =
+    !isLast && frameState.score1 === 10 ? 0 : frameState.score2 ?? "";
+
   return (
     <div className={classes.formWrapper}>
       <FormControl
@@ -98,7 +101,7 @@ export const FrameTileForm: React.FC<Props> = ({
           <Select
             labelId="select-label-2"
             id="select-2"
-            value={frameState.score1 === 10 ? 0 : frameState.score2 ?? ""}
+            value={score2Value}
             onChange={createHandleChange("score2")}
             label="Second Round"
           >

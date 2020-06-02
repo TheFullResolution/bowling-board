@@ -1,4 +1,4 @@
-import { BehaviorSubject, from, Subject } from "rxjs";
+import { BehaviorSubject, combineLatest, from, Subject } from "rxjs";
 import {
   filter,
   flatMap,
@@ -14,6 +14,8 @@ import { FrameState, frameStateSelector } from "../Frame.state";
 import { processNewFrame } from "./processNewFrame";
 import { recalculateScores } from "./recalculateScores";
 import { gameStateSelector } from "../Game.state";
+import { recalculateLatsScores } from "./recalculateLastScores";
+import { getExtraFrame } from "./getExtraFrame";
 
 export interface ScoreState extends FrameState {
   score1: number;
@@ -33,13 +35,39 @@ export const ScoreState = {
     gameStateSelector
       .pipe(
         skip(1),
+        filter((frameState) => frameState.frame <= frameState.maxFrames),
         withLatestFrom(frameStateSelector),
-        flatMap(([frame, frameState]) => processNewFrame(frameState)),
+        flatMap(([gameState, frameState]) => processNewFrame(frameState)),
         withLatestFrom(scoreStateSubject),
         flatMap(([frameState, scoreState]) => {
           scoreState.push(frameState);
 
           return recalculateScores(scoreState);
+        })
+      )
+      .subscribe((scores) => {
+        scoreStateSubject.next(scores);
+      });
+
+    gameStateSelector
+      .pipe(
+        skip(1),
+        filter((frameState) => frameState.frame > frameState.maxFrames),
+        withLatestFrom(frameStateSelector),
+        flatMap(([gameState, frameState]) => {
+          console.log(frameState);
+
+          const scoreState = scoreStateSubject.getValue();
+
+          return combineLatest(
+            getExtraFrame(frameState, scoreState[scoreState.length - 1]),
+            from([scoreState])
+          );
+        }),
+        flatMap(([lastFrame, scoreState]) => {
+          scoreState.push(lastFrame);
+
+          return recalculateLatsScores(scoreState);
         })
       )
       .subscribe((scores) => {

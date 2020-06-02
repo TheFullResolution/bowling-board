@@ -1,6 +1,5 @@
 import { BehaviorSubject, Subject } from "rxjs";
-import { map, skip, skipWhile } from "rxjs/operators";
-import { gameStateSelector } from "./Game.state";
+import { map, skip } from "rxjs/operators";
 
 export interface SetPlayers {
   id: string;
@@ -34,16 +33,7 @@ export const SessionState = {
         ...newState,
       });
     });
-
-    gameStateSelector
-      .pipe(
-        map((gameState) => gameState.frame > gameState.maxFrames),
-        skipWhile((el) => !el)
-      )
-      .subscribe((nextGame) => {
-        const state = sessionStateSubject.getValue();
-        sessionStateSubject.next({ ...state, game: state.game + 1 });
-      });
+    
   },
   update: (newState: Partial<SessionState>) => {
     sessionDispatcher.next(newState);
