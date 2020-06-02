@@ -14,15 +14,17 @@ const gameStateSubject = new BehaviorSubject<GameState>({
 const gameDispatcher = new Subject<Partial<GameState>>();
 
 export const GameState = {
-  state: gameStateSubject,
   init: () => {
     gameDispatcher.subscribe((newState) => {
       gameStateSubject.next({ ...gameStateSubject.getValue(), ...newState });
     });
   },
+  update: (val: Partial<GameState>) => {
+    gameDispatcher.next(val);
+  },
 };
 
-export const gameStateSelector = gameStateSubject.asObservable()
+export const gameStateSelector = gameStateSubject.asObservable();
 
 export const gameFrameSelector = gameStateSubject.pipe(
   map((state) => state.frame),

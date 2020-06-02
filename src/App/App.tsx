@@ -5,7 +5,13 @@ import { BoardGame } from "../BoardGame/BoardGame";
 import { theme } from "../theme";
 import { useAppState } from "../stateUtils/useAppState";
 import { AppPosition, appPositionSelector, AppState } from "../state/App.state";
-import { FrameState, GameState, PlayerState, SessionState } from "../state";
+import {
+  FrameState,
+  GameState,
+  PlayerState,
+  ScoreState,
+  SessionState,
+} from "../state";
 
 export const App: React.FC = () => {
   useEffect(() => {
@@ -14,6 +20,7 @@ export const App: React.FC = () => {
     PlayerState.init();
     FrameState.init();
     AppState.init();
+    ScoreState.init();
   }, []);
 
   const [appPosition] = useAppState({

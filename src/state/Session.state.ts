@@ -23,10 +23,9 @@ export const SessionState = {
       });
     });
   },
-};
-
-export const updateSessionState = (newState: Partial<SessionState>) => {
-  sessionDispatcher.next(newState);
+  update: (newState: Partial<SessionState>) => {
+    sessionDispatcher.next(newState);
+  }
 };
 
 export const sessionPlayerSelector = sessionStateSubject.pipe(

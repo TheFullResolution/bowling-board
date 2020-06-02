@@ -6,15 +6,21 @@ import {
   MenuItem,
   Paper,
   Select,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
 } from "@material-ui/core";
 import range from "lodash.range";
 import { makeStyles } from "@material-ui/core/styles";
 import cls from "classnames";
 import { useSelector } from "../../stateUtils/useSelector";
 import { createFrameSelector, FrameState } from "../../state/Frame.state";
-import { PlayerState } from "../../state/Player.state";
-
-const RANGE_FOR_POINTS = 11;
+import { PlayerState } from "../../state";
+import { RANGE_FOR_POINTS } from "../../config";
+import { createScoreFrameSelector } from "../../state/Score.state";
 
 interface Props {
   player: PlayerState;
@@ -35,6 +41,12 @@ const useStyles = makeStyles((theme) =>
     formWrapper: {
       flex: "auto",
     },
+    points: {
+      fontWeight: theme.typography.fontWeightBold,
+    },
+    pointsRow: {
+      backgroundColor: theme.palette.primary.light,
+    },
     formcontrol: {
       width: "100%",
       "&:not(:first-child)": {
@@ -46,11 +58,19 @@ const useStyles = makeStyles((theme) =>
 
 export const FrameTile: React.FC<Props> = ({ player, frame, currentFrame }) => {
   const isCurrent = frame === currentFrame;
+  const isPast = frame < currentFrame;
 
   const [frameState] = useSelector(createFrameSelector(player.id), {
     id: "",
     score1: null,
     score2: null,
+  });
+
+  const [scoreState] = useSelector(createScoreFrameSelector(frame, player.id), {
+    id: "",
+    score1: 0,
+    score2: 0,
+    points: 0,
   });
 
   const createHandleChange = (type: "score1" | "score2") => (
@@ -119,7 +139,38 @@ export const FrameTile: React.FC<Props> = ({ player, frame, currentFrame }) => {
             </Select>
           </FormControl>
         </div>
-      ) : null}
+      ) : (
+        isPast && (
+          <TableContainer>
+            <Table size="small">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Round 1</TableCell>
+                  <TableCell>Round 2</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                <TableRow>
+                  <TableCell align="center">{scoreState?.score1}</TableCell>
+                  <TableCell align="center">{scoreState?.score2}</TableCell>
+                </TableRow>
+                <TableRow className={classes.pointsRow}>
+                  <TableCell
+                    align="center"
+                    className={classes.points}
+                    component={"th"}
+                  >
+                    Points
+                  </TableCell>
+                  <TableCell align="center" className={classes.points}>
+                    {scoreState?.points}
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )
+      )}
     </Paper>
   );
 };
