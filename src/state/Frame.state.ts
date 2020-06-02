@@ -2,7 +2,7 @@ import { BehaviorSubject, from, Subject } from "rxjs";
 import { distinctUntilChanged, filter, flatMap, map } from "rxjs/operators";
 import { sessionPlayerSelector } from "./Session.state";
 import { gameFrameSelector } from "./Game.state";
-import { ScoreState } from "./Score.state";
+import { ScoreState } from "./Score/Score.state";
 
 export interface FrameState {
   id: string;

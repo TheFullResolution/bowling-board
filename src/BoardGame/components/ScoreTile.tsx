@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useRef } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Avatar, createStyles, Paper } from "@material-ui/core";
 import { useSelector } from "../../stateUtils/useSelector";
-import { createScoreTotal } from "../../state/Score.state";
+import { createScoreTotalSelector } from "../../state/Score/Score.state";
 import cls from "classnames";
 
 interface Props {
@@ -28,7 +28,9 @@ const useStyles = makeStyles((theme) =>
 export const ScoreTile: React.FC<Props> = ({ playerId }) => {
   const classes = useStyles();
 
-  const [scoreState] = useSelector(createScoreTotal(playerId), 0);
+  const scoreTotalSelector = useRef(createScoreTotalSelector(playerId));
+
+  const [scoreState] = useSelector(scoreTotalSelector.current, 0);
 
   return (
     <Paper className={classes.container}>
