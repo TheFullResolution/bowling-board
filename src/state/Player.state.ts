@@ -21,7 +21,7 @@ export const PlayerState = {
   init: () => {
     sessionPlayerSelector.subscribe((players) => {
       playerStateSubject.next(
-        players.map((player) => ({ ...player, automatic: false }))
+        players.map((player) => ({ ...player, automatic: true }))
       );
     });
 

@@ -8,7 +8,7 @@ import {
   Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { PlayerState } from "../../state/Player.state";
+import { PlayerState } from "../../state";
 
 interface Props {
   player: PlayerState;

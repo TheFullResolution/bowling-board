@@ -1,8 +1,10 @@
 import { BehaviorSubject, from, Subject } from "rxjs";
 import { distinctUntilChanged, filter, flatMap, map } from "rxjs/operators";
 import { sessionPlayerSelector } from "./Session.state";
+import { gameFrameSelector } from "./Game.state";
+import { ScoreState } from "./Score.state";
 
-interface FrameState {
+export interface FrameState {
   id: string;
   score1: number | null;
   score2: number | null;
@@ -21,6 +23,14 @@ export const FrameState = {
     sessionPlayerSelector.subscribe((players) => {
       frameStateSubject.next(
         players.map(({ id }) => ({ id, score1: null, score2: null }))
+      );
+    });
+
+    gameFrameSelector.subscribe((frame) => {
+      const frameState = frameStateSubject.getValue();
+      ScoreState.update(frameState);
+      frameStateSubject.next(
+        frameState.map(({ id }) => ({ id, score1: null, score2: null }))
       );
     });
 
@@ -48,6 +58,8 @@ export const FrameState = {
     frameStateDispatcher.next(frame);
   },
 };
+
+export const frameStateSelector = frameStateSubject.asObservable();
 
 export const createFrameSelector = (id: string) =>
   frameStateSubject.pipe(

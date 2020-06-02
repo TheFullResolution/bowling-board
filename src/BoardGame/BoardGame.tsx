@@ -9,6 +9,7 @@ import { GameControl } from "./components/GameControl";
 import { useSelector } from "../stateUtils/useSelector";
 import { playersSelector } from "../state/Player.state";
 import { gameStateSelector } from "../state/Game.state";
+import { ScoreTile } from "./components/ScoreTile";
 
 interface Props {}
 
@@ -42,7 +43,12 @@ export const BoardGame: React.FC<Props> = () => {
   const classes = useStyles();
 
   const [players] = useSelector(playersSelector, []);
-  const [game] = useSelector(gameStateSelector, { frame: 1, maxFrames: 10 });
+  const [game] = useSelector(gameStateSelector, {
+    frame: 1,
+    maxFrames: 10,
+  });
+
+  const frames = range(1, game.maxFrames + 1);
 
   return (
     <Container maxWidth="xl">
@@ -64,24 +70,48 @@ export const BoardGame: React.FC<Props> = () => {
         </div>
         <div className={cls(classes.column, classes.frames)}>
           <div />
-          <div />
+          <div className={classes.framesGrid}>
+            {frames.map((frame) => {
+              const isCurrent = frame === game.frame;
+              const isPast = frame < game.frame;
+              return (
+                <Typography
+                  variant="h6"
+                  component="h3"
+                  gutterBottom
+                  align="center"
+                  key={frame}
+                  id={`frame-${frame}`}
+                  color={
+                    isCurrent ? "secondary" : isPast ? "textSecondary" : "initial"
+                  }
+                >
+                  Frame {frame}
+                </Typography>
+              );
+            })}
+          </div>
           {players.map((player) => (
             <div className={classes.framesGrid} key={player.id}>
-              {range(1, game.maxFrames + 1).map((frame) => (
+              {frames.map((frame) => (
                 <FrameTile
                   key={player.id + frame}
                   player={player}
                   frame={frame}
                   currentFrame={game.frame}
-                ></FrameTile>
+                />
               ))}
             </div>
           ))}
         </div>
-        <div>
+        <div className={classes.column}>
           <Typography variant="h5" component="h2" gutterBottom align="center">
             Score
           </Typography>
+          <div />
+          {players.map((player) => (
+            <ScoreTile key={player.id} playerId={player.id} />
+          ))}
         </div>
       </div>
     </Container>
