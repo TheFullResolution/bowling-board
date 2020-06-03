@@ -1,28 +1,13 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { CssBaseline, ThemeProvider } from "@material-ui/core";
 import { StartGame } from "../StartGame/StartGame";
 import { BoardGame } from "../BoardGame/BoardGame";
 import { theme } from "../theme";
 import { useAppState } from "../stateUtils/useAppState";
-import { AppPosition, appPositionSelector, AppState } from "../state/App.state";
-import {
-  FrameState,
-  GameState,
-  PlayerState,
-  ScoreState,
-  SessionState,
-} from "../state";
+import { AppPosition, appPositionSelector } from "./App.state";
+import { ScoreBoard } from "../ScoreBoard/ScoreBoard";
 
 export const App: React.FC = () => {
-  useEffect(() => {
-    SessionState.init();
-    GameState.init();
-    PlayerState.init();
-    FrameState.init();
-    AppState.init();
-    ScoreState.init();
-  }, []);
-
   const [appPosition] = useAppState({
     selector: appPositionSelector,
     defaultStateKey: "appPosition",
@@ -32,7 +17,13 @@ export const App: React.FC = () => {
     <ThemeProvider theme={theme}>
       <>
         <CssBaseline></CssBaseline>
-        {appPosition === AppPosition.starGame ? <StartGame /> : <BoardGame />}
+        {appPosition === AppPosition.starGame ? (
+          <StartGame />
+        ) : appPosition === AppPosition.gameBoard ? (
+          <BoardGame />
+        ) : (
+          <ScoreBoard />
+        )}
       </>
     </ThemeProvider>
   );

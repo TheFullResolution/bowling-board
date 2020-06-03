@@ -7,9 +7,13 @@ import { PlayerTile } from "./components/PlayerTile";
 import { FrameTile } from "./components/FrameTile";
 import { GameControl } from "./components/GameControl";
 import { useSelector } from "../stateUtils/useSelector";
-import { playersSelector } from "../state/Player.state";
-import { gameStateSelector } from "../state/Game.state";
 import { ScoreTile } from "./components/ScoreTile";
+import {
+  gameDefaultState,
+  gameStateSelector,
+} from "../App/GameStates/Game.state";
+import { playersSelector } from "../App/GameStates/Players.state";
+import { Instructions } from "./components/Instructions";
 
 interface Props {}
 
@@ -33,7 +37,7 @@ const useStyles = makeStyles((theme) =>
     },
     framesGrid: {
       display: "grid",
-      gridTemplateColumns: "repeat(10, 200px)",
+      gridTemplateColumns: "repeat(11, 200px)",
       gridColumnGap: theme.spacing(2),
     },
   })
@@ -41,23 +45,20 @@ const useStyles = makeStyles((theme) =>
 
 export const BoardGame: React.FC<Props> = () => {
   const classes = useStyles();
-
   const [players] = useSelector(playersSelector, []);
-  const [game] = useSelector(gameStateSelector, {
-    frame: 1,
-    maxFrames: 10,
-  });
+  const [game] = useSelector(gameStateSelector, gameDefaultState);
 
   const frames = range(1, game.maxFrames + 1);
 
   return (
     <Container maxWidth="xl">
+      <Instructions />
       <Box my={6}>
         <Typography variant="h3" component="h1" gutterBottom align="center">
           Bowling Board
         </Typography>
       </Box>
-      <GameControl currentFrame={game.frame} />
+      <GameControl gameState={game} />
       <div className={classes.container}>
         <div className={classes.column}>
           <Typography variant="h5" component="h2" gutterBottom align="center">
@@ -74,6 +75,7 @@ export const BoardGame: React.FC<Props> = () => {
             {frames.map((frame) => {
               const isCurrent = frame === game.frame;
               const isPast = frame < game.frame;
+              const isLast = frame === game.maxFrames;
               return (
                 <Typography
                   variant="h6"
@@ -83,24 +85,32 @@ export const BoardGame: React.FC<Props> = () => {
                   key={frame}
                   id={`frame-${frame}`}
                   color={
-                    isCurrent ? "secondary" : isPast ? "textSecondary" : "initial"
+                    isCurrent
+                      ? "secondary"
+                      : isPast
+                      ? "textSecondary"
+                      : "initial"
                   }
                 >
-                  Frame {frame}
+                  {isLast ? "Extra Throws" : `Frame ${frame}`}
                 </Typography>
               );
             })}
           </div>
           {players.map((player) => (
             <div className={classes.framesGrid} key={player.id}>
-              {frames.map((frame) => (
-                <FrameTile
-                  key={player.id + frame}
-                  player={player}
-                  frame={frame}
-                  currentFrame={game.frame}
-                />
-              ))}
+              {frames.map((frame) => {
+                const isLast = frame === game.maxFrames;
+                return (
+                  <FrameTile
+                    key={player.id + frame}
+                    player={player}
+                    frame={frame}
+                    currentFrame={game.frame}
+                    isLast={isLast}
+                  />
+                );
+              })}
             </div>
           ))}
         </div>

@@ -1,9 +1,9 @@
 import { FrameState } from "../Frame.state";
 import { from } from "rxjs";
 import { map, reduce } from "rxjs/operators";
-import { weightedRand } from "../../stateUtils/weightedRand";
-import { MAX_POINTS, RANGE_FOR_POINTS } from "../../config";
-import { ScoreState } from "./Score.state";
+import { weightedRand } from "../../../stateUtils/weightedRand";
+import { MAX_POINTS, RANGE_FOR_POINTS } from "../../../config";
+import { ScoreState } from "../Score.state";
 
 export function processNewFrame(frameState: FrameState[]) {
   return from(frameState).pipe(
@@ -28,6 +28,7 @@ export function processNewFrame(frameState: FrameState[]) {
         points: score1 + score2,
         addFramesToPoints: 0,
         strike: false,
+        spare: false,
       };
     }),
     map((frame) => {
@@ -41,6 +42,7 @@ export function processNewFrame(frameState: FrameState[]) {
         return {
           ...frame,
           addFramesToPoints: 1,
+          spare: true,
         };
       } else return frame;
     }),

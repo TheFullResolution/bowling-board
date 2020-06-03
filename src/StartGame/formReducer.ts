@@ -1,6 +1,6 @@
 import randomatic from "randomatic";
 
-export const playersInitialState = [
+export const initialFormState = [
   {
     id: "player1",
     value: "",
@@ -15,12 +15,12 @@ type Action = {
   };
 };
 
-export type PlayersFormState = typeof playersInitialState;
+export type FormReducer = typeof initialFormState;
 
-export const playersFormStateReducer = (
-  state: PlayersFormState,
+export const formReducer = (
+  state: FormReducer,
   action: Action
-): PlayersFormState => {
+): FormReducer => {
   switch (action.type) {
     case "addPlayer": {
       const id = randomatic("Aa", 10);
@@ -30,7 +30,7 @@ export const playersFormStateReducer = (
       return state.filter((el) => el.id !== action.payload?.id);
 
     case "updatePlayer":
-      return state.reduce<PlayersFormState>((arr, el) => {
+      return state.reduce<FormReducer>((arr, el) => {
         if (el.id === action.payload?.id) {
           el.value = action.payload.value ?? "";
         }
@@ -40,6 +40,6 @@ export const playersFormStateReducer = (
       }, []);
 
     case "resetState":
-      return playersInitialState;
+      return initialFormState;
   }
 };
