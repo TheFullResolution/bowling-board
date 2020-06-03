@@ -8,8 +8,9 @@ import {
   Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { AppState, PlayerState } from "../../App/App.state";
+import { AppState} from "../../App/App.state";
 import { ActionType } from "../../App/App.actions";
+import {PlayerState} from '../../App/GameStates/Players.state'
 
 interface Props {
   player: PlayerState;

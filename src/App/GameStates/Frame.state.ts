@@ -5,13 +5,17 @@ import {
   flatMap,
   map,
   reduce,
+  shareReplay,
+  withLatestFrom,
 } from "rxjs/operators";
 import {
   ActionType,
   AppActions,
-  SetPlayersAction,
+  ResetFrameAction,
+  StartGameAction,
   UpdateFrameAction,
 } from "../App.actions";
+import { playersSelector } from "./Players.state";
 
 export interface FrameState {
   id: string;
@@ -37,10 +41,9 @@ export const FrameState = {
     frameStateDispatcher$.next(newState);
   },
   registerActions: (actions$: Subject<AppActions>) => ({
-
-    setInitialFrames$: actions$.pipe(
-      filter((action): action is SetPlayersAction => {
-        return (action as SetPlayersAction).type === ActionType.setPlayers;
+    startGame$: actions$.pipe(
+      filter((action): action is StartGameAction => {
+        return (action as StartGameAction).type === ActionType.startGame;
       }),
       flatMap((action) => getInitialFrameState(action.payload)),
       map((payload) => ({
@@ -48,13 +51,23 @@ export const FrameState = {
         payload,
       }))
     ),
-
+    resetFrame$: actions$.pipe(
+      filter((action): action is ResetFrameAction => {
+        return (action as ResetFrameAction).type === ActionType.resetFrame;
+      }),
+      withLatestFrom(playersSelector),
+      flatMap(([action, playerState]) => getInitialFrameState(playerState)),
+      map((payload) => ({
+        type: ActionType.setFrame,
+        payload,
+      }))
+    ),
     updateFrame$: actions$.pipe(
       filter((action): action is UpdateFrameAction => {
         return (action as UpdateFrameAction).type === ActionType.updateFrame;
       }),
-      map((action) => {
-        const state = FrameState.state$.getValue();
+      withLatestFrom(FrameState.state$),
+      map(([action, state]) => {
         return state.map((el) => {
           if (el.id === action.payload.id) {
             return {
@@ -76,7 +89,9 @@ export const FrameState = {
   }),
 };
 
-export const frameStateSelector = FrameState.state$.asObservable();
+export const frameStateSelector = FrameState.state$
+  .asObservable()
+  .pipe(shareReplay(1));
 
 export const createFrameSelector = (id: string) =>
   frameStateSelector.pipe(

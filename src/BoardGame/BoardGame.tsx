@@ -8,8 +8,11 @@ import { FrameTile } from "./components/FrameTile";
 import { GameControl } from "./components/GameControl";
 import { useSelector } from "../stateUtils/useSelector";
 import { ScoreTile } from "./components/ScoreTile";
-import { playersSelector } from "../App/App.state";
-import {gameStateSelector} from '../App/GameStates/Game.state'
+import {
+  gameDefaultState,
+  gameStateSelector,
+} from "../App/GameStates/Game.state";
+import { playersSelector } from "../App/GameStates/Players.state";
 
 interface Props {}
 
@@ -42,11 +45,7 @@ const useStyles = makeStyles((theme) =>
 export const BoardGame: React.FC<Props> = () => {
   const classes = useStyles();
   const [players] = useSelector(playersSelector, []);
-  const [game] = useSelector(gameStateSelector, {
-    frame: 0,
-    maxFrames: 0,
-    finished: 1,
-  });
+  const [game] = useSelector(gameStateSelector, gameDefaultState);
 
   const frames = range(1, game.maxFrames + 1);
 

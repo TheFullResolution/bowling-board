@@ -13,19 +13,21 @@ export const GameControl: React.FC<Props> = ({ gameState }) => {
     AppState.dispatch({ type: ActionType.finishFrame });
   };
 
-  const isLast = gameState.frame === gameState.maxFrames;
+  const finishGame = () => {
+    AppState.dispatch({ type: ActionType.finishGame });
+  };
 
-  const gameIsFinished = gameState.frame > gameState.maxFrames;
+  const isLast = gameState.frame === gameState.maxFrames;
 
   return (
     <>
-      {gameIsFinished ? (
+      {gameState.gameFinished ? (
         <>
           <Typography variant="h4" component="p" gutterBottom align="center">
             GAME COMPLETED
           </Typography>
           <Box textAlign="center">
-            <Button variant="contained" color="primary">
+            <Button variant="contained" color="primary" onClick={finishGame}>
               Go to Score Board
             </Button>
           </Box>

@@ -5,7 +5,7 @@ import cls from "classnames";
 import { FrameTileForm } from "./FrameTileForm";
 import { FrameTileResults } from "./FrameTileResults";
 import { FrameTileLastWrapper } from "./FrameTileLastWrapper";
-import { PlayerState } from "../../App/App.state";
+import {PlayerState} from '../../App/GameStates/Players.state'
 
 interface Props {
   player: PlayerState;

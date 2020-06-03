@@ -9,16 +9,14 @@ import {
 import { ActionType, AppActions } from "./App.actions";
 import { FrameState } from "./GameStates/Frame.state";
 import { GameState } from "./GameStates/Game.state";
+import { PlayersState } from "./GameStates/Players.state";
+import { ScoreState } from "./GameStates/Score.state";
+import { SessionState } from "./GameStates/Session.state";
 
 export enum AppPosition {
   starGame,
   gameBoard,
-}
-
-export interface PlayerState {
-  id: string;
-  value: string;
-  automatic: boolean;
+  scoreBoard,
 }
 
 interface SessionScore {
@@ -30,53 +28,61 @@ export interface State {
   appPosition: AppPosition;
   showInstructions: boolean;
   sessionScores: SessionScore[][];
-  players: PlayerState[];
 }
 
 export const defaultState: State = {
   appPosition: AppPosition.starGame,
   showInstructions: true,
   sessionScores: [],
-  players: [],
 };
 
 export const appStateActions$ = new Subject<AppActions>();
 
 const frameActions = FrameState.registerActions(appStateActions$);
 const gameActions = GameState.registerActions(appStateActions$);
+const playersActions = PlayersState.registerActions(appStateActions$);
+const scoreActions = ScoreState.registerActions(appStateActions$);
+const sessionsActions = SessionState.registerActions(appStateActions$);
 
 const appStateDispatcher$ = merge(
   appStateActions$,
   frameActions.updateFrame$,
-  frameActions.setInitialFrames$,
+  frameActions.startGame$,
+  frameActions.resetFrame$,
   gameActions.finishFrame$,
+  playersActions.startGame$,
+  playersActions.updatePlayers$,
+  scoreActions.finishFrame$,
+  scoreActions.lastFrame$,
+  sessionsActions.finishGame$
 );
 
 export const AppState = {
   state$: appStateDispatcher$.pipe(
     scan((state: State, action: AppActions) => {
-      console.log({ action });
+      console.log(JSON.stringify(action.type, null, 2), {
+        payload: (action as any).payload,
+      });
       switch (action.type) {
-        case ActionType.setPlayers:
+        case ActionType.startGame:
           return {
             ...state,
             appPosition: AppPosition.gameBoard,
-            players: action.payload.map((player) => ({
-              ...player,
-              automatic: true,
-            })),
           };
 
-        case ActionType.updatePlayer:
+        case ActionType.finishGame:
           return {
             ...state,
-            players: state.players.map((player) => {
-              if (action.payload.id === player.id) {
-                return { ...player, ...action.payload };
-              }
-              return player;
-            }),
+            appPosition: AppPosition.scoreBoard,
           };
+
+        case ActionType.setScoreState:
+          ScoreState.dispatch(action.payload);
+          return state;
+
+        case ActionType.setPlayers:
+          PlayersState.dispatch(action.payload);
+          return state;
 
         case ActionType.setGameState:
           GameState.dispatch(action.payload);
@@ -85,7 +91,9 @@ export const AppState = {
         case ActionType.setFrame:
           FrameState.dispatch(action.payload);
           return state;
-
+        case ActionType.setSessionState:
+          SessionState.dispatch(action.payload);
+          return state;
         default:
           return state;
       }
@@ -101,8 +109,4 @@ export const AppState = {
 export const appPositionSelector = AppState.state$.pipe(
   map((state) => state.appPosition),
   distinctUntilChanged()
-);
-
-export const playersSelector = AppState.state$.pipe(
-  map((state) => state.players)
 );

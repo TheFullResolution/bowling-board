@@ -28,10 +28,15 @@ export const PlayerForm: React.FC<Props> = ({
         const removePlayer = createRemovePlayer(id);
         const onChange = createOnChange(id);
         return (
-          <Fade in={true} appear={true} key={id} timeout={550}>
+          <Fade
+            in={true}
+            appear={true}
+            key={id}
+            timeout={index === 0 ? 0 : 550}
+          >
             <Box display="flex">
               <TextField
-                autoFocus
+                autoFocus={index === 0}
                 error={showformValid && !value}
                 margin="dense"
                 id={id}

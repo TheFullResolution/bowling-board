@@ -8,10 +8,10 @@ import {
   TableHead,
   TableRow,
 } from "@material-ui/core";
-import { createScoreFrameSelector } from "../../App/GameStates/Score/Score.state";
+import { createScoreFrameSelector } from "../../App/GameStates/Score.state";
 import { useSelector } from "../../stateUtils/useSelector";
 import { makeStyles } from "@material-ui/core/styles";
-import { PlayerState } from "../../App/App.state";
+import {PlayerState} from '../../App/GameStates/Players.state'
 
 interface Props {
   frame: number;

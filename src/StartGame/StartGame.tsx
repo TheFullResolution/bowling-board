@@ -65,7 +65,7 @@ export const StartGame: React.FC = () => {
     if (!checkIfValid) {
       setShowFormValid(true);
     } else {
-      AppState.dispatch({ type: ActionType.setPlayers, payload: players });
+      AppState.dispatch({ type: ActionType.startGame, payload: players });
     }
   };
   const classes = useStyles();

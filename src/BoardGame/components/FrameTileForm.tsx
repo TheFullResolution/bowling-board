@@ -11,8 +11,9 @@ import { RANGE_FOR_POINTS } from "../../config";
 import { makeStyles } from "@material-ui/core/styles";
 import { createFrameSelector } from "../../App/GameStates/Frame.state";
 import { useSelector } from "../../stateUtils/useSelector";
-import { AppState, PlayerState } from "../../App/App.state";
+import { AppState} from "../../App/App.state";
 import { ActionType } from "../../App/App.actions";
+import {PlayerState} from '../../App/GameStates/Players.state'
 
 interface Props {
   player: PlayerState;

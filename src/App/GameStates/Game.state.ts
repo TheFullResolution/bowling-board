@@ -1,38 +1,60 @@
 import { BehaviorSubject, Subject } from "rxjs";
-import { ActionType, AppActions, FinishFrameAction } from "../App.actions";
-import { filter, map } from "rxjs/operators";
+import {
+  ActionType,
+  AppActions,
+  FinishFrameAction,
+  FinishGame,
+} from "../App.actions";
+import { filter, map, shareReplay, withLatestFrom } from "rxjs/operators";
 
 export interface GameState {
   frame: number;
   maxFrames: number;
-  finished: number;
+  gameFinished: boolean;
 }
 
-const gameStateDispatcher$ = new BehaviorSubject<GameState>({
+export const gameDefaultState = {
   frame: 1,
   maxFrames: 11,
-  finished: 0,
-});
+  gameFinished: false,
+};
+
+const gameStateDispatcher$ = new BehaviorSubject<GameState>(gameDefaultState);
 
 export const GameState = {
-  state$: gameStateDispatcher$,
+  state$: gameStateDispatcher$.pipe(
+    map((state) => {
+      if (state.frame > state.maxFrames) {
+        state.gameFinished = true;
+      }
+      return state;
+    })
+  ),
 
   dispatch: (newState: GameState) => {
     gameStateDispatcher$.next(newState);
   },
 
   registerActions: (actions$: Subject<AppActions>) => ({
+    finishGame$: actions$.pipe(
+      filter((action): action is FinishGame => {
+        return (action as FinishGame).type === ActionType.finishGame;
+      }),
+      map(() => ({
+        type: ActionType.setGameState,
+        payload: gameDefaultState,
+      }))
+    ),
     finishFrame$: actions$.pipe(
       filter((action): action is FinishFrameAction => {
         return (action as FinishFrameAction).type === ActionType.finishFrame;
       }),
-      map(() => {
-        const state = GameState.state$.getValue();
-
+      withLatestFrom(GameState.state$),
+      map(([asction, state]) => {
         return { ...state, frame: state.frame + 1 };
       }),
       map((payload) => {
-        if (payload.frame + 1 > payload.maxFrames) {
+        if (payload.frame > payload.maxFrames) {
           actions$.next({
             type: ActionType.lastFrame,
           });
@@ -49,4 +71,4 @@ export const GameState = {
     ),
   }),
 };
-export const gameStateSelector = GameState.state$;
+export const gameStateSelector = GameState.state$.pipe(shareReplay(1));
