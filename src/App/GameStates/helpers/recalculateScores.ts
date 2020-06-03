@@ -1,6 +1,6 @@
 import { from } from "rxjs";
 import { flatMap, map, reduce } from "rxjs/operators";
-import { ScoreState } from "./Score.state";
+import { ScoreState } from "../Score.state";
 
 const getExtraPoints = (
   scoreState: ScoreState[][],

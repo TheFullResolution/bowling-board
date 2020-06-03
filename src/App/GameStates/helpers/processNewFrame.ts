@@ -3,7 +3,7 @@ import { from } from "rxjs";
 import { map, reduce } from "rxjs/operators";
 import { weightedRand } from "../../../stateUtils/weightedRand";
 import { MAX_POINTS, RANGE_FOR_POINTS } from "../../../config";
-import { ScoreState } from "./Score.state";
+import { ScoreState } from "../Score.state";
 
 export function processNewFrame(frameState: FrameState[]) {
   return from(frameState).pipe(

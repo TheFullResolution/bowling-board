@@ -1,4 +1,4 @@
-import { ScoreState } from "./Score.state";
+import { ScoreState } from "../Score.state";
 import { from } from "rxjs";
 
 export function recalculateLatsScores(scoreState: ScoreState[][]) {
