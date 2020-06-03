@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import range from "lodash.range";
 import cls from "classnames";
 import { Box, Container, createStyles, Typography } from "@material-ui/core";
@@ -45,10 +45,15 @@ const useStyles = makeStyles((theme) =>
 
 export const BoardGame: React.FC<Props> = () => {
   const classes = useStyles();
+  const frameRef = useRef<HTMLDivElement>(null);
   const [players] = useSelector(playersSelector, []);
   const [game] = useSelector(gameStateSelector, gameDefaultState);
 
   const frames = range(1, game.maxFrames + 1);
+
+  useEffect(() => {
+    if (frameRef.current && game.frame > 2) frameRef.current.scrollLeft += 180;
+  }, [game.frame]);
 
   return (
     <Container maxWidth="xl">
@@ -69,7 +74,7 @@ export const BoardGame: React.FC<Props> = () => {
             <PlayerTile key={player.id} player={player}></PlayerTile>
           ))}
         </div>
-        <div className={cls(classes.column, classes.frames)}>
+        <div className={cls(classes.column, classes.frames)} ref={frameRef}>
           <div />
           <div className={classes.framesGrid}>
             {frames.map((frame) => {

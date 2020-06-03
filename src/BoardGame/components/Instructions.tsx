@@ -45,9 +45,10 @@ export const Instructions: React.FC<Props> = () => {
       maxWidth="sm"
       keepMounted
       fullWidth
+      disablePortal={true}
     >
       <DialogTitle id="form-dialog-title">Instructions</DialogTitle>
-      <DialogContent>
+      <DialogContent dividers={true}>
         <DialogContentText>How to use the board:</DialogContentText>
         <List>
           <ListItem>
