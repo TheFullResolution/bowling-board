@@ -21,6 +21,7 @@ export const ActionType = {
   toggleFormModal: "toggleFormModal",
   playeAnotherGame: "playeAnotherGame",
   createNewGame: "createNewGame",
+  closeInstructions: "closeInstructions",
 } as const;
 
 export interface StartGameAction {
@@ -98,7 +99,13 @@ export interface CreateNewGame {
   type: typeof ActionType.createNewGame;
 }
 
+
+export interface CloseIntsructions {
+  type: typeof ActionType.closeInstructions;
+}
+
 export type AppActions =
+|CloseIntsructions
   | PlayeAnotherGame
   | FinishFrameAction
   | FinishGame

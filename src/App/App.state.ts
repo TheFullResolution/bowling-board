@@ -75,6 +75,10 @@ export const AppState = {
           return { ...state, showFormModal: action.payload };
         }
 
+        case ActionType.closeInstructions: {
+          return { ...state, showInstructions: false };
+        }
+
         case ActionType.playeAnotherGame: {
           ScoreState.dispatch([]);
           GameState.dispatch(gameDefaultState);
@@ -89,6 +93,7 @@ export const AppState = {
             ...state,
             appPosition: AppPosition.starGame,
             showFormModal: true,
+            showInstructions: true
           };
         }
 
@@ -130,4 +135,9 @@ export const appPositionSelector = AppState.state$.pipe(
 export const appFormModalSelector = AppState.state$.pipe(
   map((state) => state.showFormModal),
   distinctUntilChanged()
+);
+
+export const appInstructionsModalSelector = AppState.state$.pipe(
+    map((state) => state.showInstructions),
+    distinctUntilChanged()
 );

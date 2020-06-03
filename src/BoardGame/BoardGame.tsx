@@ -13,6 +13,7 @@ import {
   gameStateSelector,
 } from "../App/GameStates/Game.state";
 import { playersSelector } from "../App/GameStates/Players.state";
+import { Instructions } from "./components/Instructions";
 
 interface Props {}
 
@@ -51,6 +52,7 @@ export const BoardGame: React.FC<Props> = () => {
 
   return (
     <Container maxWidth="xl">
+      <Instructions />
       <Box my={6}>
         <Typography variant="h3" component="h1" gutterBottom align="center">
           Bowling Board
