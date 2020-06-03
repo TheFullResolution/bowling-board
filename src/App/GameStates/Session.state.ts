@@ -7,7 +7,6 @@ import {
   map,
   reduce,
   shareReplay,
-  tap,
   withLatestFrom,
 } from "rxjs/operators";
 import { scoreStateTotalsSelector } from "./Score.state";
@@ -18,10 +17,7 @@ export interface SessionState {
   points: number;
 }
 
-const sessionStateSubject$ = new BehaviorSubject<SessionState[][]>([
-  [{ id: "player1", points: 20 }],
-  [{ id: "player1", points: 120 }],
-]);
+const sessionStateSubject$ = new BehaviorSubject<SessionState[][]>([]);
 
 export const SessionState = {
   state$: sessionStateSubject$,
@@ -48,7 +44,9 @@ export const sessionStateSelector = SessionState.state$
   .asObservable()
   .pipe(shareReplay(1));
 
-export const sessionGamesSelector = sessionStateSelector.pipe(map(sessions => sessions.length))
+export const sessionGamesSelector = sessionStateSelector.pipe(
+  map((sessions) => sessions.length)
+);
 
 const sessionTotalsSelector = sessionStateSelector.pipe(
   flatMap((session) =>
@@ -175,7 +173,8 @@ export const scoreBoardSelector = combineLatest(
       reduce((acc, value) => {
         acc.push(value);
         return acc;
-      }, [] as ScoreBoardList[])
+      }, [] as ScoreBoardList[]),
+      map((list) => list.sort((a, b) => b.won - a.won))
     )
   )
 );

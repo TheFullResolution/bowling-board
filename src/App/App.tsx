@@ -17,14 +17,13 @@ export const App: React.FC = () => {
     <ThemeProvider theme={theme}>
       <>
         <CssBaseline></CssBaseline>
-        {/*{appPosition === AppPosition.starGame ? (*/}
-        {/*  <StartGame />*/}
-        {/*) : appPosition === AppPosition.gameBoard ? (*/}
-        {/*  <BoardGame />*/}
-        {/*) : (*/}
-        {/*  <ScoreBoard />*/}
-        {/*)}*/}
+        {appPosition === AppPosition.starGame ? (
+          <StartGame />
+        ) : appPosition === AppPosition.gameBoard ? (
+          <BoardGame />
+        ) : (
           <ScoreBoard />
+        )}
       </>
     </ThemeProvider>
   );

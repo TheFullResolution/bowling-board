@@ -18,6 +18,9 @@ export const ActionType = {
   updateFrame: "updateFrame",
   updatePlayer: "updatePlayer",
   setSessionState: "setSessionState",
+  toggleFormModal: "toggleFormModal",
+  playeAnotherGame: "playeAnotherGame",
+  createNewGame: "createNewGame",
 } as const;
 
 export interface StartGameAction {
@@ -82,7 +85,21 @@ export interface SetSessionState {
   payload: SessionState[][];
 }
 
+export interface ToggleFormModal {
+  type: typeof ActionType.toggleFormModal;
+  payload: boolean;
+}
+
+export interface PlayeAnotherGame {
+  type: typeof ActionType.playeAnotherGame;
+}
+
+export interface CreateNewGame {
+  type: typeof ActionType.createNewGame;
+}
+
 export type AppActions =
+  | PlayeAnotherGame
   | FinishFrameAction
   | FinishGame
   | LastFrameAction
@@ -95,4 +112,6 @@ export type AppActions =
   | StartGameAction
   | UpdateFrameAction
   | UpdatePlayersAction
-  | SetSessionState;
+  | SetSessionState
+  | ToggleFormModal
+  | CreateNewGame;

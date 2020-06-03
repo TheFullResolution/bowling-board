@@ -8,7 +8,7 @@ import {
 } from "rxjs/operators";
 import { ActionType, AppActions } from "./App.actions";
 import { FrameState } from "./GameStates/Frame.state";
-import { GameState } from "./GameStates/Game.state";
+import { gameDefaultState, GameState } from "./GameStates/Game.state";
 import { PlayersState } from "./GameStates/Players.state";
 import { ScoreState } from "./GameStates/Score.state";
 import { SessionState } from "./GameStates/Session.state";
@@ -19,21 +19,16 @@ export enum AppPosition {
   scoreBoard,
 }
 
-interface SessionScore {
-  id: string;
-  points: string;
-}
-
 export interface State {
   appPosition: AppPosition;
   showInstructions: boolean;
-  sessionScores: SessionScore[][];
+  showFormModal: boolean;
 }
 
 export const defaultState: State = {
   appPosition: AppPosition.starGame,
   showInstructions: true,
-  sessionScores: [],
+  showFormModal: false,
 };
 
 export const appStateActions$ = new Subject<AppActions>();
@@ -76,6 +71,27 @@ export const AppState = {
             appPosition: AppPosition.scoreBoard,
           };
 
+        case ActionType.toggleFormModal: {
+          return { ...state, showFormModal: action.payload };
+        }
+
+        case ActionType.playeAnotherGame: {
+          ScoreState.dispatch([]);
+          GameState.dispatch(gameDefaultState);
+          return { ...state, appPosition: AppPosition.gameBoard };
+        }
+
+        case ActionType.createNewGame: {
+          ScoreState.dispatch([]);
+          GameState.dispatch(gameDefaultState);
+          SessionState.dispatch([]);
+          return {
+            ...state,
+            appPosition: AppPosition.starGame,
+            showFormModal: true,
+          };
+        }
+
         case ActionType.setScoreState:
           ScoreState.dispatch(action.payload);
           return state;
@@ -108,5 +124,10 @@ export const AppState = {
 
 export const appPositionSelector = AppState.state$.pipe(
   map((state) => state.appPosition),
+  distinctUntilChanged()
+);
+
+export const appFormModalSelector = AppState.state$.pipe(
+  map((state) => state.showFormModal),
   distinctUntilChanged()
 );

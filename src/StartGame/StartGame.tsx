@@ -4,12 +4,10 @@ import { PlayerForm } from "./components/PlayerForm";
 import { Dialog } from "./components/Dialog";
 import banner from "./banner.jpg";
 import { makeStyles } from "@material-ui/core/styles";
-import {
-  playersFormStateReducer,
-  playersInitialState,
-} from "./playersFormState";
-import { AppState } from "../App/App.state";
+import { formReducer, initialFormState } from "./formReducer";
+import { appFormModalSelector, AppState } from "../App/App.state";
 import { ActionType } from "../App/App.actions";
+import { useAppState } from "../stateUtils/useAppState";
 
 const formId = "players-form";
 
@@ -22,37 +20,37 @@ const useStyles = makeStyles({
 });
 
 export const StartGame: React.FC = () => {
-  const [open, setOpen] = useState(false);
+  const [open] = useAppState({
+    selector: appFormModalSelector,
+    defaultStateKey: "showFormModal",
+  });
   const [showformValid, setShowFormValid] = useState(false);
-  const [players, dispatchPlayersAction] = useReducer(
-    playersFormStateReducer,
-    playersInitialState
-  );
+  const [form, dispatchFormAction] = useReducer(formReducer, initialFormState);
 
   const handleClickOpen = () => {
-    setOpen(true);
+    AppState.dispatch({ type: ActionType.toggleFormModal, payload: true });
   };
 
   const handleClose = () => {
-    setOpen(false);
+    AppState.dispatch({ type: ActionType.toggleFormModal, payload: false });
     setShowFormValid(false);
-    dispatchPlayersAction({ type: "resetState" });
+    dispatchFormAction({ type: "resetState" });
   };
 
   const addPlayer = () => {
-    dispatchPlayersAction({ type: "addPlayer" });
+    dispatchFormAction({ type: "addPlayer" });
     showformValid && setShowFormValid(false);
   };
 
   const createRemovePlayer = (id: string) => () => {
-    dispatchPlayersAction({ type: "removePlayer", payload: { id } });
+    dispatchFormAction({ type: "removePlayer", payload: { id } });
     showformValid && setShowFormValid(false);
   };
 
   const createOnChange = (id: string) => (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    dispatchPlayersAction({
+    dispatchFormAction({
       type: "updatePlayer",
       payload: { id, value: event.target.value },
     });
@@ -61,11 +59,11 @@ export const StartGame: React.FC = () => {
 
   const handleSubmit = (event: React.SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const checkIfValid = players.every((player) => !!player.value);
+    const checkIfValid = form.every((player) => !!player.value);
     if (!checkIfValid) {
       setShowFormValid(true);
     } else {
-      AppState.dispatch({ type: ActionType.startGame, payload: players });
+      AppState.dispatch({ type: ActionType.startGame, payload: form });
     }
   };
   const classes = useStyles();
@@ -100,7 +98,7 @@ export const StartGame: React.FC = () => {
               showformValid={showformValid}
               createRemovePlayer={createRemovePlayer}
               createOnChange={createOnChange}
-              players={players}
+              players={form}
               handleSubmit={handleSubmit}
               formId={formId}
             />

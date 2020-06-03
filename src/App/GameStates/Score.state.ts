@@ -17,8 +17,8 @@ import { getExtraFrame } from "./helpers/getExtraFrame";
 import {
   ActionType,
   AppActions,
-  FinishFrameAction,
   LastFrameAction,
+  NextFrameAction,
 } from "../App.actions";
 
 export interface ScoreState extends FrameState {
@@ -28,6 +28,7 @@ export interface ScoreState extends FrameState {
   addFramesToPoints: number;
   strike: boolean;
   spare: boolean;
+  extraFrame?: boolean;
 }
 
 const scoreStateSubject$ = new BehaviorSubject<ScoreState[][]>([]);
@@ -38,8 +39,8 @@ export const ScoreState = {
   },
   registerActions: (actions$: Subject<AppActions>) => ({
     finishFrame$: actions$.pipe(
-      filter((action): action is FinishFrameAction => {
-        return (action as FinishFrameAction).type === ActionType.finishFrame;
+      filter((action): action is NextFrameAction => {
+        return (action as NextFrameAction).type === ActionType.nextFrame;
       }),
       withLatestFrom(frameStateSelector),
       flatMap(([action, frameState]) => processNewFrame(frameState)),
@@ -111,10 +112,10 @@ export const scoreStateTotalsSelector = scoreStateSelector.pipe(
           )
         )
       ),
-        reduce((acc, value) => {
-          acc.push(value);
-          return acc;
-        }, [] as { id: string; points: number }[])
+      reduce((acc, value) => {
+        acc.push(value);
+        return acc;
+      }, [] as { id: string; points: number }[])
     )
   )
 );
